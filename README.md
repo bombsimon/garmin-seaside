@@ -4,7 +4,13 @@ Seaside is an attempt at a minimalistic Garmin watch face. This is heavily
 inspired by the watch mockup by [Commissioner Of
 design™](https://dribbble.com/shots/4945320-Digital-Watch-face/) since I thought
 it looked so nice. I'm still in the search of a better font and a better
-implementation.
+implementation. The current fon't used is
+[Nunito](https://fonts.google.com/specimen/Nunito) from Google. The font's has
+been converted to bitmap fonts according to the [Resource
+Compiler](https://developer.garmin.com/connect-iq/programmers-guide/resource-compiler)
+documentation, however the recommended application
+([BMFont](http://www.angelcode.com/products/bmfont/)) is only available for
+Windows and I'm still looking for a good (free) alternative for macOS.
 
 ![screenshot](screenshot.png)
 
