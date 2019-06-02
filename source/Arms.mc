@@ -30,7 +30,7 @@ module Arms {
         return minuteOrSecond(clockTime.sec);
     }
 
-    static function minuteOrSecond(arm) {
+    function minuteOrSecond(arm) {
         var degrees = arm * degreesPerMinuteOrSecond;
 
         return degrees;

@@ -44,4 +44,11 @@ $ monkeyc \
 
 # Run it in the simulator
 $ monkeydo out/production/seaside/seaside.prg vivoactive3
+
+# Package it for release
+$ monkeyc \
+    -e \
+    -f monkey.jungle \
+    -o my_app.iq \
+    -y path/to/dev_key.der
 ```
