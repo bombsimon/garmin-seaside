@@ -1,6 +1,5 @@
 using Toybox.Graphics;
 using Toybox.Lang;
-using Toybox.Math;
 using Toybox.System;
 using Toybox.Time.Gregorian;
 using Toybox.Time;
@@ -9,6 +8,10 @@ using Toybox.WatchUi;
 using Arms;
 
 class SeasideView extends WatchUi.WatchFace {
+    // Set a state to keep track of when the clock is asleep.
+    var isAwake = false;
+
+    // Declare the fonts.
     var nunito90 = null;
     var nunito36 = null;
     var nunito18 = null;
@@ -46,13 +49,8 @@ class SeasideView extends WatchUi.WatchFace {
         var currentDay = getFullDayName(dateInfo.day_of_week);
         var currentDateString = Lang.format("$1$ $2$ $3$", [dateInfo.day, dateInfo.month.toUpper(), dateInfo.year]);
 
-        // Draw the entire background yellow.
-        dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_WHITE);
-        dc.fillRectangle(0, 0, width, height);
-
-        // Draw the background black for 5/6 of the screen.
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_DK_GRAY);
-        dc.fillRectangle(0, 0, width, height - (height / 6));
+        // Draw the background.
+        drawBackground(dc);
 
         // Draw the hour digits.
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
@@ -69,70 +67,51 @@ class SeasideView extends WatchUi.WatchFace {
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_YELLOW);
         dc.drawText(width / 2, height - 30, nunito18, currentDateString, Graphics.TEXT_JUSTIFY_CENTER);
 
-        // To draw a seconds indicator we need to figure out the outer circle of
-        // the watch face for each second.
-        //
-        // Usually in mathematics an angle is calcualted from the X axis and
-        // counter clockwize. This means that 0,1 in a grid would be 0 degrees
-        // whereas we want 1,0 to be zero degrees and 0,-1 to be 90 degrees.
-        //
-        //          0 sec
-        //          0
-        //          +
-        //          |
-        // 45 sec   |     15 sec
-        // 270+----0,0----+90
-        //          |
-        //          |
-        //          +
-        //         30 sec
-        //         180
-        //
-        // Y angle is the angle from the Y-axis calculated by taking 360 degrees
-        // divided by 60 seconds multiplied by the current second.
-        // 00 => 0 degrees
-        // 15 => 90 degrees
-        // 30 => 180 degrees
-        // 45 => 270 degrees
-        var yAngle = Arms.second(clockTime);
+        // Draw the second indicator if the device supports partial updates
+        // (every second updates) or if the device is awake.
+        if ( Toybox.WatchUi.WatchFace has :onPartialUpdate ) {
+            onPartialUpdate(dc);
+        }
+        else if ( isAwake ) {
+            drawSecondIndicator(dc);
+        }
+    }
 
-        // Since we want to calculate our coordinates by conventional algorithms
-        // we just add 270 degrees to spin the coordinate 3/4 forward. We can't
-        // reduce the value from 90 because even though the cos and sin result
-        // would be the same we would not be able to calcualte the radiant.
-        var xAngle = yAngle + 270;
+    function onPartialUpdate(dc) {
+        // Re-draw the seconds indicator.
+        drawSecondIndicator(dc);
+    }
 
-        // The radius is half the screen - given a round screen that is.
-        var radius = width / 2;
+    function drawBackground(dc) {
+        var width = dc.getWidth();
+        var height = dc.getHeight();
 
-        // Calculate cos (width) and sin (height) for each given angle. Since
-        // the cos and sin functions in the Maths library takes radiants we must
-        // convert our angle from X to radiant. The formulate to convert into
-        // rad is 1° × π/180 = 0,01745rad
-        var cos = Math.cos(xAngle * (Math.PI / 180));
-        var sin = Math.sin(xAngle * (Math.PI / 180));
+        // Draw the entire background yellow.
+        dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_WHITE);
+        dc.fillRectangle(0, 0, width, height);
 
-        // To get the edge of the circle where we would draw we multiply the
-        // result with our radius.
-        var xDot = cos * radius;
-        var yDot = sin * radius;
+        // Draw the background black for 5/6 of the screen.
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_DK_GRAY);
+        dc.fillRectangle(0, 0, width, height - (height / 6));
+    }
 
-        // And since the watch face doesn't have it's center at 0,0 but rather
-        // (width / 2),(height / 2), we must add an offset which in this case is
-        // the radius (meaning the center of the clock would be at 0,0 if we
-        // moved it one radius to the left and one radius down).
-        //
-        //    ^
-        //    |  X X
-        //    | X   X
-        //    |X     X
-        //    | X   X
-        //    |   X
-        // +-0,0-------->
-        //    |
-        //    +
-        var x = radius + xDot;
-        var y = radius + yDot;
+    function drawSecondIndicator(dc) {
+        var width = dc.getWidth();
+        var height = dc.getHeight();
+        var clockTime = System.getClockTime();
+
+        // Get the outer edge for each second.
+        var outerEdge = Arms.circleOuterEdge(Arms.second(clockTime), width, height, 0);
+        var x = outerEdge[0];
+        var y = outerEdge[1];
+
+        // TODO: Calculate new clipping area to know where to re-draw the
+        // background. This can NOT overlap with any text.
+
+        dc.setClip(0, 0, x, y);
+
+        // Re-draw the background within the boundires.
+        drawBackground(dc);
 
         // Draw a big circle to use as border.
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
@@ -141,6 +120,9 @@ class SeasideView extends WatchUi.WatchFace {
         // Draw a smaller circle inside the bigger one.
         dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_WHITE);
         dc.fillCircle(x, y, 3);
+
+        // Restore the cliping.
+        dc.clearClip();
     }
 
     function getFullDayName(short) {
@@ -181,10 +163,15 @@ class SeasideView extends WatchUi.WatchFace {
 
     // The user has just looked at their watch. Timers and animations may be started here.
     function onExitSleep() {
+        isAwake = true;
     }
 
     // Terminate any active timers and prepare for slow updates.
     function onEnterSleep() {
+        isAwake = false;
+
+        // Request update (to potentially hide second indicator)
+        WatchUi.requestUpdate();
     }
 
 }
