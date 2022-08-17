@@ -56,18 +56,23 @@ class SeasideView extends WatchUi.WatchFace {
 
         // Draw the hour digits.
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
-        dc.drawText(width / 2 + 20, height / 2 - (height * 0.25), nunito90, currentHour, Graphics.TEXT_JUSTIFY_RIGHT);
+        dc.drawText(width / 2 + 20, height / 2 - 80, nunito90, currentHour, Graphics.TEXT_JUSTIFY_RIGHT);
 
-        // Draw tne minute digits.
+        // Draw the minute digits.
         dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_BLACK);
-        dc.drawText(width / 2 + 25, height / 2 - 20, nunito36, currentMinute, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(width / 2 + 25, height / 2 - 38, nunito36, currentMinute, Graphics.TEXT_JUSTIFY_LEFT);
 
         // Draw the current day.
-        dc.drawText(width / 2, height / 1.65, nunito12, currentDay, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(width / 2, height / 2 + 2, nunito12, currentDay, Graphics.TEXT_JUSTIFY_CENTER);
 
         // Draw the current date.
+        var yellowStart = (height / 6) * 5;
+        var yellowHeight = height - yellowStart;
+        var halfYellow = yellowHeight / 2;
+        var midOfYellow = height - halfYellow;
+
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_YELLOW);
-        dc.drawText(width / 2, height - 30, nunito18, currentDateString, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(width / 2, midOfYellow - 10, nunito18, currentDateString, Graphics.TEXT_JUSTIFY_CENTER);
 
         // To draw a seconds indicator we need to figure out the outer circle of
         // the watch face for each second.

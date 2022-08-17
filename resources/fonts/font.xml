@@ -1,6 +1,6 @@
 <fonts>
-    <font id="nunitoBlack90" filename="nunitoBlack90.fnt" filter="0123456789" />
-    <font id="nunitoRegular36" filename="nunitoRegular36.fnt"  filter="0123456789" />
-    <font id="nunitoRegular18" filename="nunitoRegular18.fnt"  />
-    <font id="nunitoRegular12" filename="nunitoRegular12.fnt"  />
+    <font antialias="true" id="nunitoBlack90" filename="nunitoBlack90.fnt" filter="0123456789"/>
+    <font antialias="true" id="nunitoRegular36" filename="nunitoRegular36.fnt" filter="0123456789"/>
+    <font antialias="true" id="nunitoRegular18" filename="nunitoRegular18.fnt"/>
+    <font antialias="true" id="nunitoRegular12" filename="nunitoRegular12.fnt"/>
 </fonts>

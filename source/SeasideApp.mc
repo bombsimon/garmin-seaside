@@ -1,7 +1,6 @@
 using Toybox.Application;
 
 class SeasideApp extends Application.AppBase {
-
     function initialize() {
         AppBase.initialize();
     }
@@ -18,5 +17,4 @@ class SeasideApp extends Application.AppBase {
     function getInitialView() {
         return [ new SeasideView() ];
     }
-
 }
