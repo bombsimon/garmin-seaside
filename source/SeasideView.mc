@@ -14,11 +14,14 @@ class SeasideView extends WatchUi.WatchFace {
     var nunito18 = null;
     var nunito12 = null;
 
+    var stepsIcon = null;
+
     function initialize() {
         nunito90 = WatchUi.loadResource(Rez.Fonts.nunitoBlack90);
         nunito36 = WatchUi.loadResource(Rez.Fonts.nunitoRegular36);
         nunito18 = WatchUi.loadResource(Rez.Fonts.nunitoRegular18);
         nunito12 = WatchUi.loadResource(Rez.Fonts.nunitoRegular12);
+        stepsIcon =  WatchUi.loadResource(Rez.Drawables.StepsIcon);
 
         WatchFace.initialize();
     }
@@ -46,6 +49,18 @@ class SeasideView extends WatchUi.WatchFace {
         var currentDay = getFullDayName(dateInfo.day_of_week);
         var currentDateString = Lang.format("$1$ $2$ $3$", [dateInfo.day, dateInfo.month.toUpper(), dateInfo.year]);
 
+
+        var batteryInfo = System.getSystemStats().battery;
+
+        var yellowStart = (height / 6) * 5;
+        var yellowHeight = height - yellowStart;
+        var halfYellow = yellowHeight / 2;
+        var midOfYellow = height - halfYellow;
+
+        var info = ActivityMonitor.getInfo();
+        var steps = info.steps;
+
+
         // Draw the entire background yellow.
         dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_WHITE);
         dc.fillRectangle(0, 0, width, height);
@@ -65,12 +80,18 @@ class SeasideView extends WatchUi.WatchFace {
         // Draw the current day.
         dc.drawText(width / 2, height / 2 + 2, nunito12, currentDay, Graphics.TEXT_JUSTIFY_CENTER);
 
-        // Draw the current date.
-        var yellowStart = (height / 6) * 5;
-        var yellowHeight = height - yellowStart;
-        var halfYellow = yellowHeight / 2;
-        var midOfYellow = height - halfYellow;
+        if (batteryInfo <= 20) {
+            var batteryText = Lang.format("$1$%", [ batteryInfo.format("%2d") ] );
+            dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_BLACK);
+            dc.drawText(width / 2, height / 2 + 20, nunito18, batteryText, Graphics.TEXT_JUSTIFY_CENTER);
+        }
 
+        // Current steps
+        dc.drawBitmap(width / 2 - 25, yellowStart - 25, stepsIcon);
+        dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_BLACK);
+        dc.drawText(width / 2, yellowStart - 25 , nunito18, steps, Graphics.TEXT_JUSTIFY_LEFT);
+
+        // Draw the current date.
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_YELLOW);
         dc.drawText(width / 2, midOfYellow - 10, nunito18, currentDateString, Graphics.TEXT_JUSTIFY_CENTER);
 
