@@ -89,7 +89,7 @@ class SeasideView extends WatchUi.WatchFace {
         // Current steps
         dc.drawBitmap(width / 2 - 25, yellowStart - 25, stepsIcon);
         dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_BLACK);
-        dc.drawText(width / 2, yellowStart - 25 , nunito18, steps, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(width / 2, yellowStart - 25 , nunito18, Lang.format("$1$", [ steps ]), Graphics.TEXT_JUSTIFY_LEFT);
 
         // Draw the current date.
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_YELLOW);
@@ -212,5 +212,4 @@ class SeasideView extends WatchUi.WatchFace {
     // Terminate any active timers and prepare for slow updates.
     function onEnterSleep() {
     }
-
 }
