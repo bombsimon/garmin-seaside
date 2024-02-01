@@ -12,15 +12,15 @@ documentation, however the recommended application
 ([BMFont](http://www.angelcode.com/products/bmfont/)) is only available for
 Windows and I'm still looking for a good (free) alternative for macOS.
 
-![screenshot](screenshot.png)
+![screenshot](./screenshots/screenshot.png)
 
 ## Links and References
 
-* [Connect IQ Programmers
-  Guide](https://developer.garmin.com/connect-iq/programmers-guide/)
-* [API documentation](https://developer.garmin.com/connect-iq/api-docs/)
-* [IntelliJ Monkey C
-  Plugin](https://plugins.jetbrains.com/plugin/8253-monkey-c-garmin-connect-iq-)
+-   [Connect IQ Programmers
+    Guide](https://developer.garmin.com/connect-iq/programmers-guide/)
+-   [API documentation](https://developer.garmin.com/connect-iq/api-docs/)
+-   [IntelliJ Monkey C
+    Plugin](https://plugins.jetbrains.com/plugin/8253-monkey-c-garmin-connect-iq-)
 
 ## Build and run
 
