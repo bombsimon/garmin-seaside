@@ -1,27 +1,36 @@
-using Toybox.Graphics;
-using Toybox.Lang;
-using Toybox.Math;
-using Toybox.System;
-using Toybox.Time.Gregorian;
-using Toybox.Time;
-using Toybox.WatchUi;
+import Toybox.Graphics;
+import Toybox.Lang;
+import Toybox.Math;
+import Toybox.System;
+import Toybox.Time.Gregorian;
+import Toybox.Time;
+import Toybox.WatchUi;
 
 using Arms;
 
 class SeasideView extends WatchUi.WatchFace {
-    var nunito90 = null;
-    var nunito36 = null;
-    var nunito18 = null;
-    var nunito12 = null;
-
-    var stepsIcon = null;
+    var nunito90 as WatchUi.FontResource;
+    var nunito36 as WatchUi.FontResource;
+    var nunito18 as WatchUi.FontResource;
+    var nunito12 as WatchUi.FontResource;
+    var stepsIcon as Graphics.BitmapReference;
 
     function initialize() {
-        nunito90 = WatchUi.loadResource(Rez.Fonts.nunitoBlack90);
-        nunito36 = WatchUi.loadResource(Rez.Fonts.nunitoRegular36);
-        nunito18 = WatchUi.loadResource(Rez.Fonts.nunitoRegular18);
-        nunito12 = WatchUi.loadResource(Rez.Fonts.nunitoRegular12);
-        stepsIcon =  WatchUi.loadResource(Rez.Drawables.StepsIcon);
+        nunito90 =
+            WatchUi.loadResource(Rez.Fonts.nunitoBlack90) as
+            WatchUi.FontResource;
+        nunito36 =
+            WatchUi.loadResource(Rez.Fonts.nunitoRegular36) as
+            WatchUi.FontResource;
+        nunito18 =
+            WatchUi.loadResource(Rez.Fonts.nunitoRegular18) as
+            WatchUi.FontResource;
+        nunito12 =
+            WatchUi.loadResource(Rez.Fonts.nunitoRegular12) as
+            WatchUi.FontResource;
+        stepsIcon =
+            WatchUi.loadResource(Rez.Drawables.StepsIcon) as
+            Graphics.BitmapReference;
 
         WatchFace.initialize();
     }
@@ -34,8 +43,7 @@ class SeasideView extends WatchUi.WatchFace {
     // Called when this View is brought to the foreground. Restore
     // the state of this View and prepare it to be shown. This includes
     // loading resources into memory.
-    function onShow() {
-    }
+    function onShow() {}
 
     // Update the view
     function onUpdate(dc) {
@@ -46,9 +54,12 @@ class SeasideView extends WatchUi.WatchFace {
         var currentHour = clockTime.hour.format("%02d");
         var currentMinute = clockTime.min.format("%02d");
         var dateInfo = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
-        var currentDay = getFullDayName(dateInfo.day_of_week);
-        var currentDateString = Lang.format("$1$ $2$ $3$", [dateInfo.day, dateInfo.month.toUpper(), dateInfo.year]);
-
+        var currentDay = getFullDayName(dateInfo.day_of_week as String);
+        var currentDateString = Lang.format("$1$ $2$ $3$", [
+            dateInfo.day,
+            (dateInfo.month as String).toUpper(),
+            dateInfo.year,
+        ]);
 
         var batteryInfo = System.getSystemStats().battery;
 
@@ -60,40 +71,75 @@ class SeasideView extends WatchUi.WatchFace {
         var info = ActivityMonitor.getInfo();
         var steps = info.steps;
 
-
         // Draw the entire background yellow.
         dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_WHITE);
         dc.fillRectangle(0, 0, width, height);
 
         // Draw the background black for 5/6 of the screen.
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_DK_GRAY);
-        dc.fillRectangle(0, 0, width, height - (height / 6));
+        dc.fillRectangle(0, 0, width, height - height / 6);
 
         // Draw the hour digits.
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
-        dc.drawText(width / 2 + 20, height / 2 - 80, nunito90, currentHour, Graphics.TEXT_JUSTIFY_RIGHT);
+        dc.drawText(
+            width / 2 + 20,
+            height / 2 - 80,
+            nunito90,
+            currentHour,
+            Graphics.TEXT_JUSTIFY_RIGHT
+        );
 
         // Draw the minute digits.
         dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_BLACK);
-        dc.drawText(width / 2 + 25, height / 2 - 38, nunito36, currentMinute, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(
+            width / 2 + 25,
+            height / 2 - 38,
+            nunito36,
+            currentMinute,
+            Graphics.TEXT_JUSTIFY_LEFT
+        );
 
         // Draw the current day.
-        dc.drawText(width / 2, height / 2 + 2, nunito12, currentDay, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(
+            width / 2,
+            height / 2 + 2,
+            nunito12,
+            currentDay,
+            Graphics.TEXT_JUSTIFY_CENTER
+        );
 
         if (batteryInfo <= 20) {
-            var batteryText = Lang.format("$1$%", [ batteryInfo.format("%2d") ] );
+            var batteryText = Lang.format("$1$%", [batteryInfo.format("%2d")]);
             dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_BLACK);
-            dc.drawText(width / 2, height / 2 + 20, nunito18, batteryText, Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(
+                width / 2,
+                height / 2 + 20,
+                nunito18,
+                batteryText,
+                Graphics.TEXT_JUSTIFY_CENTER
+            );
         }
 
         // Current steps
         dc.drawBitmap(width / 2 - 25, yellowStart - 25, stepsIcon);
         dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_BLACK);
-        dc.drawText(width / 2, yellowStart - 25 , nunito18, Lang.format("$1$", [ steps ]), Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(
+            width / 2,
+            yellowStart - 25,
+            nunito18,
+            Lang.format("$1$", [steps]),
+            Graphics.TEXT_JUSTIFY_LEFT
+        );
 
         // Draw the current date.
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_YELLOW);
-        dc.drawText(width / 2, midOfYellow - 10, nunito18, currentDateString, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(
+            width / 2,
+            midOfYellow - 10,
+            nunito18,
+            currentDateString,
+            Graphics.TEXT_JUSTIFY_CENTER
+        );
 
         // To draw a seconds indicator we need to figure out the outer circle of
         // the watch face for each second.
@@ -169,7 +215,7 @@ class SeasideView extends WatchUi.WatchFace {
         dc.fillCircle(x, y, 3);
     }
 
-    function getFullDayName(short) {
+    function getFullDayName(short as String) as String {
         var long = "";
 
         switch (short) {
@@ -202,14 +248,11 @@ class SeasideView extends WatchUi.WatchFace {
     // Called when this View is removed from the screen. Save the
     // state of this View here. This includes freeing resources from
     // memory.
-    function onHide() {
-    }
+    function onHide() {}
 
     // The user has just looked at their watch. Timers and animations may be started here.
-    function onExitSleep() {
-    }
+    function onExitSleep() {}
 
     // Terminate any active timers and prepare for slow updates.
-    function onEnterSleep() {
-    }
+    function onEnterSleep() {}
 }

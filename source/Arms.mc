@@ -1,14 +1,15 @@
-using Toybox.System;
-using Toybox.WatchUi as Ui;
+import Toybox.Lang;
+import Toybox.System;
+import Toybox.WatchUi;
 
 module Arms {
     // Each minute or second adds 360 / 60 (6) degrees angle.
-    var degreesPerMinuteOrSecond = 360 / 60;
+    var degreesPerMinuteOrSecond as Float = (360 / 60) as Float;
 
     // Each hour adds 360 / 12 (30) degrees.
-    var degressPerHour = 360 / 12;
+    var degressPerHour as Float = (360 / 12) as Float;
 
-    function hour(clockTime) {
+    function hour(clockTime as ClockTime) as Float {
         // Calculate base angle of the hour arm.
         var hourDegrees = clockTime.hour * degressPerHour;
 
@@ -22,27 +23,17 @@ module Arms {
         return hourDegrees + extraDegrees;
     }
 
-    function minute(clockTime) {
+    function minute(clockTime as ClockTime) as Float {
         return minuteOrSecond(clockTime.min);
     }
 
-    function second(clockTime) {
+    function second(clockTime as ClockTime) as Float {
         return minuteOrSecond(clockTime.sec);
     }
 
-    function minuteOrSecond(arm) {
+    function minuteOrSecond(arm as Number) as Float {
         var degrees = arm * degreesPerMinuteOrSecond;
 
         return degrees;
-    }
-
-    class ArmDrawer extends Ui.Drawable {
-        function initialize(params) {
-            Drawable.initialize(params);
-        }
-
-        function draw(dc) {
-            System.println("Should draw here");
-        }
     }
 }
