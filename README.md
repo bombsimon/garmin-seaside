@@ -12,15 +12,25 @@ documentation, however the recommended application
 ([BMFont](http://www.angelcode.com/products/bmfont/)) is only available for
 Windows and I'm still looking for a good (free) alternative for macOS.
 
-![screenshot](./screenshots/screenshot.png)
+<p float="left">
+    <img src="./screenshots/fr965.png" alt="yellow" width="200"/>
+    <img src="./screenshots/fr965-mint.png" alt="yellow" width="200"/>
+    <img src="./screenshots/fr965-red.png" alt="yellow" width="200"/>
+</p>
+
+## Features
+
+-   Show current time, date and name of day
+-   Multiple color selections
+-   Toggle battery percentage
+-   Show battery level in orange when less than or equal to 20%
+-   Option to show step count
 
 ## Links and References
 
 -   [Connect IQ Programmers
     Guide](https://developer.garmin.com/connect-iq/programmers-guide/)
 -   [API documentation](https://developer.garmin.com/connect-iq/api-docs/)
--   [IntelliJ Monkey C
-    Plugin](https://plugins.jetbrains.com/plugin/8253-monkey-c-garmin-connect-iq-)
 
 ## Build and run
 
@@ -52,3 +62,15 @@ $ monkeyc \
     -o my_app.iq \
     -y path/to/dev_key.der
 ```
+
+### VS Code
+
+Or just, as you probably should, install the [VS Code
+Extension](https://marketplace.visualstudio.com/items?itemName=garmin.monkey-c)
+and build that way.
+
+Or, even better, install the [Prettier Extension Monkey
+C](https://marketplace.visualstudio.com/items?itemName=markw65.prettier-extension-monkeyc)
+which contains the [Monkey C
+Optimizer](https://github.com/markw65/monkeyc-optimizer) to build an optimized
+version.
