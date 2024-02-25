@@ -1,4 +1,6 @@
 <drawables>
     <bitmap id="LauncherIcon" filename="launcher_icon.png"/>
-    <bitmap id="StepsIcon" filename="steps.png"/>
+    <bitmap id="StepsIconYellow" filename="steps_yellow.png"/>
+    <bitmap id="StepsIconRed" filename="steps_red.png"/>
+    <bitmap id="StepsIconMint" filename="steps_mint.png"/>
 </drawables>

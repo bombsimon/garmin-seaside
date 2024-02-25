@@ -3,7 +3,11 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 
 class SeasideApp extends Application.AppBase {
+    var mView as SeasideView;
+
     function initialize() {
+        mView = new SeasideView();
+
         AppBase.initialize();
     }
 
@@ -13,10 +17,13 @@ class SeasideApp extends Application.AppBase {
     // onStop() is called when your application is exiting
     function onStop(state) as Void {}
 
+    // Called on settings change.
+    function onSettingsChanged() {
+        mView.onSettingsChanged();
+    }
+
     // Return the initial view of your application here
     function getInitialView() {
-        return (
-            [new SeasideView()] as Array<WatchUi.InputDelegate or WatchUi.View>
-        );
+        return [mView] as Array<WatchUi.InputDelegate or WatchUi.View>;
     }
 }

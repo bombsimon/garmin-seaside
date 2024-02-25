@@ -1,3 +1,16 @@
 <strings>
     <string id="AppName">seaside</string>
+    <string id="AppVersionTitle">Version</string>
+
+    <!-- Settings -->
+    <string id="BottomInfoSettingTitle">Bottom info</string>
+    <string id="BottomInfoSettingNone">None</string>
+    <string id="BottomInfoSettingSteps">Steps</string>
+
+    <string id="AccentColorSettingTitle">Accent color</string>
+    <string id="AccentColorSettingYellow">Yellow</string>
+    <string id="AccentColorSettingRed">Red</string>
+    <string id="AccentColorSettingMint">Mint</string>
+
+    <string id="AlwaysShowBatteryTitle">Always show battery level</string>
 </strings>

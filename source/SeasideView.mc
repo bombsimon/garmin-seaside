@@ -5,8 +5,9 @@ import Toybox.System;
 import Toybox.Time.Gregorian;
 import Toybox.Time;
 import Toybox.WatchUi;
+import Toybox.Application.Properties;
 
-using Arms;
+import Arms;
 
 class SeasideView extends WatchUi.WatchFace {
     var nunito90 as WatchUi.FontResource;
@@ -14,6 +15,10 @@ class SeasideView extends WatchUi.WatchFace {
     var nunito18 as WatchUi.FontResource;
     var nunito12 as WatchUi.FontResource;
     var stepsIcon as Graphics.BitmapReference;
+
+    var mBottomInfo as Number = 0;
+    var mAccentColor as Number = Graphics.COLOR_TRANSPARENT;
+    var mAlwaysShowBattery as Boolean = false;
 
     function initialize() {
         nunito90 =
@@ -29,8 +34,10 @@ class SeasideView extends WatchUi.WatchFace {
             WatchUi.loadResource(Rez.Fonts.nunitoRegular12) as
             WatchUi.FontResource;
         stepsIcon =
-            WatchUi.loadResource(Rez.Drawables.StepsIcon) as
+            WatchUi.loadResource(Rez.Drawables.StepsIconYellow) as
             Graphics.BitmapReference;
+
+        onSettingsChanged();
 
         WatchFace.initialize();
     }
@@ -38,6 +45,38 @@ class SeasideView extends WatchUi.WatchFace {
     // Load your resources here
     function onLayout(dc) {
         setLayout(Rez.Layouts.WatchFace(dc));
+    }
+
+    function onSettingsChanged() as Void {
+        mBottomInfo = Properties.getValue("BottomInfo") as Number;
+        mAlwaysShowBattery =
+            Properties.getValue("AlwaysShowBattery") as Boolean;
+
+        var accentColor = Properties.getValue("AccentColor") as Number;
+
+        switch (accentColor) {
+            case 1:
+                mAccentColor = Graphics.createColor(255, 254, 37, 80);
+                stepsIcon =
+                    WatchUi.loadResource(Rez.Drawables.StepsIconRed) as
+                    Graphics.BitmapReference;
+
+                break;
+            case 2:
+                mAccentColor = Graphics.createColor(255, 37, 254, 202);
+                stepsIcon =
+                    WatchUi.loadResource(Rez.Drawables.StepsIconMint) as
+                    Graphics.BitmapReference;
+
+                break;
+            default:
+                mAccentColor = Graphics.COLOR_YELLOW;
+                stepsIcon =
+                    WatchUi.loadResource(Rez.Drawables.StepsIconYellow) as
+                    Graphics.BitmapReference;
+        }
+
+        WatchUi.requestUpdate();
     }
 
     // Called when this View is brought to the foreground. Restore
@@ -63,20 +102,20 @@ class SeasideView extends WatchUi.WatchFace {
 
         var batteryInfo = System.getSystemStats().battery;
 
-        var yellowStart = (height / 6) * 5;
-        var yellowHeight = height - yellowStart;
-        var halfYellow = yellowHeight / 2;
-        var midOfYellow = height - halfYellow;
+        var accentColorStart = (height / 6) * 5;
+        var accentColorHeight = height - accentColorStart;
+        var halfAccentColor = accentColorHeight / 2;
+        var midOfAccentColor = height - halfAccentColor;
 
         var info = ActivityMonitor.getInfo();
         var steps = info.steps;
 
-        // Draw the entire background yellow.
-        dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_WHITE);
+        // Draw the entire background in the accent color.
+        dc.setColor(mAccentColor, Graphics.COLOR_WHITE);
         dc.fillRectangle(0, 0, width, height);
 
         // Draw the background black for 5/6 of the screen.
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_DK_GRAY);
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
         dc.fillRectangle(0, 0, width, height - height / 6);
 
         // Draw the hour digits.
@@ -90,7 +129,7 @@ class SeasideView extends WatchUi.WatchFace {
         );
 
         // Draw the minute digits.
-        dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_BLACK);
+        dc.setColor(mAccentColor, Graphics.COLOR_BLACK);
         dc.drawText(
             width / 2 + 25,
             height / 2 - 38,
@@ -108,9 +147,14 @@ class SeasideView extends WatchUi.WatchFace {
             Graphics.TEXT_JUSTIFY_CENTER
         );
 
-        if (batteryInfo <= 20) {
+        if (mAlwaysShowBattery || batteryInfo <= 20) {
+            var batteryTextColor = Graphics.COLOR_WHITE;
+            if (batteryInfo <= 20) {
+                batteryTextColor = Graphics.COLOR_ORANGE;
+            }
+
             var batteryText = Lang.format("$1$%", [batteryInfo.format("%2d")]);
-            dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_BLACK);
+            dc.setColor(batteryTextColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 width / 2,
                 height / 2 + 20,
@@ -121,21 +165,23 @@ class SeasideView extends WatchUi.WatchFace {
         }
 
         // Current steps
-        dc.drawBitmap(width / 2 - 25, yellowStart - 25, stepsIcon);
-        dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_BLACK);
-        dc.drawText(
-            width / 2,
-            yellowStart - 25,
-            nunito18,
-            Lang.format("$1$", [steps]),
-            Graphics.TEXT_JUSTIFY_LEFT
-        );
+        if (mBottomInfo == 1) {
+            dc.drawBitmap(width / 2 - 25, accentColorStart - 25, stepsIcon);
+            dc.setColor(mAccentColor, Graphics.COLOR_BLACK);
+            dc.drawText(
+                width / 2,
+                accentColorStart - 25,
+                nunito18,
+                Lang.format("$1$", [steps]),
+                Graphics.TEXT_JUSTIFY_LEFT
+            );
+        }
 
         // Draw the current date.
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_YELLOW);
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             width / 2,
-            midOfYellow - 10,
+            midOfAccentColor - 10,
             nunito18,
             currentDateString,
             Graphics.TEXT_JUSTIFY_CENTER
@@ -211,7 +257,7 @@ class SeasideView extends WatchUi.WatchFace {
         dc.fillCircle(x, y, 5);
 
         // Draw a smaller circle inside the bigger one.
-        dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_WHITE);
+        dc.setColor(mAccentColor, Graphics.COLOR_WHITE);
         dc.fillCircle(x, y, 3);
     }
 
