@@ -1,1 +1,20 @@
 project.manifest = manifest.xml
+
+base.sourcePath = source
+
+# By default exclude object_store, it's the old way of getting properties.
+base.excludeAnnotations = object_store
+
+# But for resources that doesn't support properties, exclude those instead (and
+# not object_store)
+d2bravo.excludeAnnotations = properties_and_storaged
+d2bravo_titanium.excludeAnnotations = properties_and_storaged
+fenix3.excludeAnnotations = properties_and_storaged
+fenix3_hr.excludeAnnotations = properties_and_storaged
+fr230.excludeAnnotations = properties_and_storaged
+fr235.excludeAnnotations = properties_and_storaged
+fr45.excludeAnnotations = properties_and_storaged
+fr630.excludeAnnotations = properties_and_storaged
+fr920xt.excludeAnnotations = properties_and_storaged
+garminswim2.excludeAnnotations = properties_and_storaged
+vivoactive.excludeAnnotations = properties_and_storaged

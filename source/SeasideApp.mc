@@ -2,6 +2,16 @@ import Toybox.Application;
 import Toybox.Lang;
 import Toybox.WatchUi;
 
+(:properties_and_storaged)
+function getPropertyValue(key as PropertyKeyType) as PropertyValueType {
+    return Properties.getValue(key);
+}
+
+(:object_store)
+function getPropertyValue(key as PropertyKeyType) as PropertyValueType {
+    return Application.getApp().getProperty(key);
+}
+
 class SeasideApp extends Application.AppBase {
     var mView as SeasideView;
 

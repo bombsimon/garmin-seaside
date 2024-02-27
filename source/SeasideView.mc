@@ -16,8 +16,8 @@ class SeasideView extends WatchUi.WatchFace {
     var nunito12 as WatchUi.FontResource;
     var stepsIcon as Graphics.BitmapReference;
 
-    var mBottomInfo as Number = 0;
-    var mAccentColor as Number = Graphics.COLOR_TRANSPARENT;
+    var mBottomInfo as Number = 1;
+    var mAccentColor as Number = Graphics.COLOR_YELLOW;
     var mAlwaysShowBattery as Boolean = false;
 
     function initialize() {
@@ -48,22 +48,34 @@ class SeasideView extends WatchUi.WatchFace {
     }
 
     function onSettingsChanged() as Void {
-        mBottomInfo = Properties.getValue("BottomInfo") as Number;
-        mAlwaysShowBattery =
-            Properties.getValue("AlwaysShowBattery") as Boolean;
-
-        var accentColor = Properties.getValue("AccentColor") as Number;
+        mBottomInfo = getPropertyValue("BottomInfo") as Number;
+        mAlwaysShowBattery = getPropertyValue("AlwaysShowBattery") as Boolean;
+        var accentColor = getPropertyValue("AccentColor") as Number;
 
         switch (accentColor) {
             case 1:
-                mAccentColor = Graphics.createColor(255, 254, 37, 80);
+                if (Graphics has :createColor) {
+                    mAccentColor = Graphics.createColor(255, 254, 37, 80);
+                } else {
+                    // Best effort for devices not supporting API 4.0.0.
+                    // This will most likely not render nice on the device.
+                    mAccentColor = 0xfe2546;
+                }
+
                 stepsIcon =
                     WatchUi.loadResource(Rez.Drawables.StepsIconRed) as
                     Graphics.BitmapReference;
 
                 break;
             case 2:
-                mAccentColor = Graphics.createColor(255, 37, 254, 202);
+                if (Graphics has :createColor) {
+                    mAccentColor = Graphics.createColor(255, 37, 254, 202);
+                } else {
+                    // Best effort for devices not supporting API 4.0.0.
+                    // This will most likely not render nice on the device.
+                    mAccentColor = 0x25feca;
+                }
+
                 stepsIcon =
                     WatchUi.loadResource(Rez.Drawables.StepsIconMint) as
                     Graphics.BitmapReference;
