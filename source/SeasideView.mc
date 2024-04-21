@@ -9,42 +9,53 @@ import Toybox.Application.Properties;
 
 import Arms;
 
+class BottomArea extends WatchUi.Drawable {
+    var mTop as Number = 0;
+    var mAccentColor as Number = 0xfe2546;
+
+    typedef AreaParams as {
+        :top as Number,
+    };
+
+    function initialize(params as AreaParams) {
+        Drawable.initialize(params);
+
+        var top = params[:top];
+        if (top != null) {
+            mTop = top;
+        }
+    }
+
+    function draw(dc) {
+        dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
+        dc.fillRectangle(0, mTop, 500, 500);
+    }
+
+    function setColor(color as Number) as Void {
+        mAccentColor = color;
+    }
+}
+
 class SeasideView extends WatchUi.WatchFace {
-    var nunito90 as WatchUi.FontResource;
-    var nunito36 as WatchUi.FontResource;
-    var nunito18 as WatchUi.FontResource;
-    var nunito12 as WatchUi.FontResource;
     var stepsIcon as Graphics.BitmapReference;
 
+    var mBottomArea as BottomArea?;
     var mBottomInfo as Number = 1;
     var mAccentColor as Number = Graphics.COLOR_YELLOW;
     var mAlwaysShowBattery as Boolean = false;
+    var mIsRound as Boolean = false;
 
     function initialize() {
-        nunito90 =
-            WatchUi.loadResource(Rez.Fonts.nunitoBlack90) as
-            WatchUi.FontResource;
-        nunito36 =
-            WatchUi.loadResource(Rez.Fonts.nunitoRegular36) as
-            WatchUi.FontResource;
-        nunito18 =
-            WatchUi.loadResource(Rez.Fonts.nunitoRegular18) as
-            WatchUi.FontResource;
-        nunito12 =
-            WatchUi.loadResource(Rez.Fonts.nunitoRegular12) as
-            WatchUi.FontResource;
         stepsIcon =
             WatchUi.loadResource(Rez.Drawables.StepsIconYellow) as
             Graphics.BitmapReference;
 
+        var deviceSettings = System.getDeviceSettings();
+        mIsRound = deviceSettings.screenShape == System.SCREEN_SHAPE_ROUND;
+
         onSettingsChanged();
 
         WatchFace.initialize();
-    }
-
-    // Load your resources here
-    function onLayout(dc) {
-        setLayout(Rez.Layouts.WatchFace(dc));
     }
 
     function onSettingsChanged() as Void {
@@ -88,6 +99,10 @@ class SeasideView extends WatchUi.WatchFace {
                     Graphics.BitmapReference;
         }
 
+        if (mBottomArea != null) {
+            mBottomArea.setColor(mAccentColor);
+        }
+
         WatchUi.requestUpdate();
     }
 
@@ -96,10 +111,17 @@ class SeasideView extends WatchUi.WatchFace {
     // loading resources into memory.
     function onShow() {}
 
-    // Update the view
+    // Load your resources here
+    function onLayout(dc) {
+        setLayout(Rez.Layouts.WatchFace(dc));
+
+        mBottomArea = View.findDrawableById("BottomArea") as BottomArea?;
+        if (mBottomArea != null) {
+            mBottomArea.setColor(mAccentColor);
+        }
+    }
+
     function onUpdate(dc) {
-        var width = dc.getWidth();
-        var height = dc.getHeight();
         var clockTime = System.getClockTime();
 
         var currentHour = clockTime.hour.format("%02d");
@@ -112,92 +134,67 @@ class SeasideView extends WatchUi.WatchFace {
             dateInfo.year,
         ]);
 
+        var hour = View.findDrawableById("HourLabel") as WatchUi.Text;
+        hour.setText(currentHour);
+
+        var minute = View.findDrawableById("MinuteLabel") as WatchUi.Text;
+        minute.setColor(mAccentColor);
+        minute.setText(currentMinute);
+
+        var weekday = View.findDrawableById("WeekdayLabel") as WatchUi.Text;
+        weekday.setColor(mAccentColor);
+        weekday.setText(currentDay);
+
+        var date = View.findDrawableById("DateLabel") as WatchUi.Text;
+        date.setText(currentDateString);
+
         var batteryInfo = System.getSystemStats().battery;
+        var battery = View.findDrawableById("BatteryLabel") as WatchUi.Text;
+        var showBattery = mAlwaysShowBattery || batteryInfo <= 20;
 
-        var accentColorStart = (height / 6) * 5;
-        var accentColorHeight = height - accentColorStart;
-        var halfAccentColor = accentColorHeight / 2;
-        var midOfAccentColor = height - halfAccentColor;
+        battery.setVisible(showBattery);
 
-        var info = ActivityMonitor.getInfo();
-        var steps = info.steps;
-
-        // Draw the entire background in the accent color.
-        dc.setColor(mAccentColor, Graphics.COLOR_WHITE);
-        dc.fillRectangle(0, 0, width, height);
-
-        // Draw the background black for 5/6 of the screen.
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
-        dc.fillRectangle(0, 0, width, height - height / 6);
-
-        // Draw the hour digits.
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
-        dc.drawText(
-            width / 2 + 20,
-            height / 2 - 80,
-            nunito90,
-            currentHour,
-            Graphics.TEXT_JUSTIFY_RIGHT
-        );
-
-        // Draw the minute digits.
-        dc.setColor(mAccentColor, Graphics.COLOR_BLACK);
-        dc.drawText(
-            width / 2 + 25,
-            height / 2 - 38,
-            nunito36,
-            currentMinute,
-            Graphics.TEXT_JUSTIFY_LEFT
-        );
-
-        // Draw the current day.
-        dc.drawText(
-            width / 2,
-            height / 2 + 2,
-            nunito12,
-            currentDay,
-            Graphics.TEXT_JUSTIFY_CENTER
-        );
-
-        if (mAlwaysShowBattery || batteryInfo <= 20) {
+        if (showBattery) {
             var batteryTextColor = Graphics.COLOR_WHITE;
             if (batteryInfo <= 20) {
                 batteryTextColor = Graphics.COLOR_ORANGE;
             }
 
             var batteryText = Lang.format("$1$%", [batteryInfo.format("%2d")]);
-            dc.setColor(batteryTextColor, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(
-                width / 2,
-                height / 2 + 20,
-                nunito18,
-                batteryText,
-                Graphics.TEXT_JUSTIFY_CENTER
-            );
+            battery.setColor(batteryTextColor);
+            battery.setText(batteryText);
         }
 
-        // Current steps
+        var bottomInfoLabel =
+            View.findDrawableById("BottomInfoLabel") as WatchUi.Text;
+        var bottomInfo = View.findDrawableById("BottomInfo") as WatchUi.Bitmap;
+
+        bottomInfo.setVisible(mBottomInfo != 0);
+        bottomInfoLabel.setVisible(mBottomInfo != 0);
+
         if (mBottomInfo == 1) {
-            dc.drawBitmap(width / 2 - 25, accentColorStart - 25, stepsIcon);
-            dc.setColor(mAccentColor, Graphics.COLOR_BLACK);
-            dc.drawText(
-                width / 2,
-                accentColorStart - 25,
-                nunito18,
-                Lang.format("$1$", [steps]),
-                Graphics.TEXT_JUSTIFY_LEFT
-            );
+            var info = ActivityMonitor.getInfo();
+            var steps = info.steps;
+
+            bottomInfoLabel.setColor(mAccentColor);
+            bottomInfoLabel.setText(Lang.format("$1$", [steps]));
+
+            bottomInfo.setBitmap(stepsIcon);
         }
 
-        // Draw the current date.
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(
-            width / 2,
-            midOfAccentColor - 10,
-            nunito18,
-            currentDateString,
-            Graphics.TEXT_JUSTIFY_CENTER
-        );
+        View.onUpdate(dc);
+
+        drawSecondCircle(dc);
+    }
+
+    function drawSecondCircle(dc as Graphics.Dc) as Void {
+        if (!mIsRound) {
+            return;
+        }
+
+        var width = dc.getWidth();
+        var height = dc.getHeight();
+        var clockTime = System.getClockTime();
 
         // To draw a seconds indicator we need to figure out the outer circle of
         // the watch face for each second.

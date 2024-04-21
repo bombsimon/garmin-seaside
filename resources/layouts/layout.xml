@@ -1,3 +1,14 @@
 <layout id="WatchFace">
-    <label id="TimeLabel" x="center" y="center" font="Graphics.FONT_LARGE" justification="Graphics.TEXT_JUSTIFY_CENTER" color="Graphics.COLOR_BLUE" />
+    <drawable id="BottomArea" class="BottomArea">
+        <param name="top">375</param>
+    </drawable>
+
+    <bitmap visible="false" id="BottomInfo" x="200" y="345" filename="../drawables/steps_yellow.png" />
+    <label visible="false" id="BottomInfoLabel" x="center" y="340" font="@Fonts.oswaldRegular18" justification="Graphics.TEXT_JUSTIFY_LEFT" color="Graphics.COLOR_WHITE" />
+
+    <label visible="false" id="HourLabel" x="250" y="80" font="@Fonts.oswaldBold140" justification="Graphics.TEXT_JUSTIFY_RIGHT" color="Graphics.COLOR_WHITE" />
+    <label visible="false" id="MinuteLabel" x="255" y="200" font="@Fonts.oswaldRegular50" justification="Graphics.TEXT_JUSTIFY_LEFT" color="Graphics.COLOR_YELLOW" />
+    <label visible="false" id="WeekdayLabel" x="center" y="275" font="@Fonts.oswaldRegular18" justification="Graphics.TEXT_JUSTIFY_CENTER" color="Graphics.COLOR_YELLOW" />
+    <label visible="false" id="BatteryLabel" x="center" y="30" font="@Fonts.oswaldRegular18" justification="Graphics.TEXT_JUSTIFY_CENTER" color="Graphics.COLOR_WHITE" />
+    <label visible="false" id="DateLabel" x="center" y="385" font="@Fonts.oswaldLight24" justification="Graphics.TEXT_JUSTIFY_CENTER" color="Graphics.COLOR_BLACK" />
 </layout>

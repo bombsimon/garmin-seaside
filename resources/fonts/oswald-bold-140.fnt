@@ -1,0 +1,15 @@
+info face="Oswald" size=-140 bold=1 italic=0 charset="" unicode=1 stretchH=100 smooth=1 aa=2 padding=0,0,0,0 spacing=1,1 outline=0
+common lineHeight=239 base=186 scaleW=256 scaleH=256 pages=2 packed=0 alphaChnl=0 redChnl=4 greenChnl=4 blueChnl=4
+page id=0 file="oswald-bold-140_0.png"
+page id=1 file="oswald-bold-140_1.png"
+chars count=10
+char id=48   x=64    y=0     width=62    height=118   xoffset=8     yoffset=70    xadvance=77    page=0  chnl=15
+char id=49   x=69    y=0     width=39    height=114   xoffset=3     yoffset=72    xadvance=54    page=1  chnl=15
+char id=50   x=125   y=119   width=63    height=115   xoffset=5     yoffset=71    xadvance=72    page=0  chnl=15
+char id=51   x=0     y=0     width=63    height=118   xoffset=5     yoffset=70    xadvance=72    page=0  chnl=15
+char id=52   x=0     y=0     width=68    height=114   xoffset=3     yoffset=72    xadvance=73    page=1  chnl=15
+char id=53   x=63    y=119   width=61    height=116   xoffset=6     yoffset=72    xadvance=71    page=0  chnl=15
+char id=54   x=127   y=0     width=63    height=117   xoffset=7     yoffset=71    xadvance=75    page=0  chnl=15
+char id=55   x=189   y=118   width=54    height=114   xoffset=3     yoffset=72    xadvance=61    page=0  chnl=15
+char id=56   x=0     y=119   width=62    height=117   xoffset=5     yoffset=71    xadvance=73    page=0  chnl=15
+char id=57   x=191   y=0     width=63    height=117   xoffset=5     yoffset=71    xadvance=75    page=0  chnl=15
