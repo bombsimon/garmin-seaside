@@ -152,7 +152,9 @@ class SeasideView extends WatchUi.WatchFace {
         var battery = View.findDrawableById("BatteryLabel") as WatchUi.Text;
         var showBattery = mAlwaysShowBattery || batteryInfo <= 20;
 
-        battery.setVisible(showBattery);
+        if (battery has :setVisible) {
+            battery.setVisible(showBattery);
+        }
 
         if (showBattery) {
             var batteryTextColor = Graphics.COLOR_WHITE;
