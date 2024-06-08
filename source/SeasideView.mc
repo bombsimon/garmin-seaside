@@ -104,11 +104,10 @@ class SeasideView extends WatchUi.WatchFace {
 
         var currentHour = clockTime.hour.format("%02d");
         var currentMinute = clockTime.min.format("%02d");
-        var dateInfo = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
-        var currentDay = getFullDayName(dateInfo.day_of_week as String);
+        var dateInfo = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
         var currentDateString = Lang.format("$1$ $2$ $3$", [
             dateInfo.day,
-            (dateInfo.month as String).toUpper(),
+            getMonth(dateInfo.month as Number),
             dateInfo.year,
         ]);
 
@@ -155,7 +154,7 @@ class SeasideView extends WatchUi.WatchFace {
             width / 2,
             height / 2 + 2,
             nunito12,
-            currentDay,
+            getDayOfWeek(dateInfo.day_of_week as Number),
             Graphics.TEXT_JUSTIFY_CENTER
         );
 
@@ -273,34 +272,56 @@ class SeasideView extends WatchUi.WatchFace {
         dc.fillCircle(x, y, 3);
     }
 
-    function getFullDayName(short as String) as String {
-        var long = "";
-
-        switch (short) {
-            case "Mon":
-                long = "MONDAY";
-                break;
-            case "Tue":
-                long = "TUESDAY";
-                break;
-            case "Wed":
-                long = "WEDNESDAY";
-                break;
-            case "Thu":
-                long = "THURSDAY";
-                break;
-            case "Fri":
-                long = "FRIDAY";
-                break;
-            case "Sat":
-                long = "SATURDAY";
-                break;
-            case "Sun":
-                long = "SUNDAY";
-                break;
+    function getDayOfWeek(dayOfWeek as Number) as String {
+        switch (dayOfWeek) {
+            case Time.Gregorian.DAY_MONDAY:
+                return "MONDAY";
+            case Time.Gregorian.DAY_TUESDAY:
+                return "TUESDAY";
+            case Time.Gregorian.DAY_WEDNESDAY:
+                return "WEDNESDAY";
+            case Time.Gregorian.DAY_THURSDAY:
+                return "THURSDAY";
+            case Time.Gregorian.DAY_FRIDAY:
+                return "FRIDAY";
+            case Time.Gregorian.DAY_SATURDAY:
+                return "SATURDAY";
+            case Time.Gregorian.DAY_SUNDAY:
+                return "SUNDAY";
         }
 
-        return long;
+        return "UNKNOWN";
+    }
+
+    function getMonth(month as Number) as String {
+        switch (month) {
+            case Time.Gregorian.MONTH_JANUARY:
+                return "JAN";
+            case Time.Gregorian.MONTH_FEBRUARY:
+                return "FEB";
+            case Time.Gregorian.MONTH_MARCH:
+                return "MAR";
+            case Time.Gregorian.MONTH_APRIL:
+                return "APR";
+            case Time.Gregorian.MONTH_MAY:
+                return "MAY";
+            case Time.Gregorian.MONTH_JUNE:
+                return "JUN";
+            case Time.Gregorian.MONTH_JULY:
+                return "JUL";
+            case Time.Gregorian.MONTH_AUGUST:
+                return "AUG";
+            case Time.Gregorian.MONTH_SEPTEMBER:
+                return "SEP";
+            case Time.Gregorian.MONTH_OCTOBER:
+                return "OCT";
+            case Time.Gregorian.MONTH_NOVEMBER:
+                return "NOV";
+            case Time.Gregorian.MONTH_DECEMBER:
+                return "DEC";
+        }
+
+        return "UNKNOWN";
     }
 
     // Called when this View is removed from the screen. Save the
