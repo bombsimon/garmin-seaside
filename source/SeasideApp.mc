@@ -33,7 +33,7 @@ class SeasideApp extends Application.AppBase {
     }
 
     // Return the initial view of your application here
-    function getInitialView() {
-        return [mView] as Array<WatchUi.InputDelegate or WatchUi.View>;
+    function getInitialView() as [Views] or [Views, InputDelegates] {
+        return [mView];
     }
 }
