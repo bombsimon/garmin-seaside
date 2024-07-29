@@ -1,8 +1,4 @@
 <settings>
-    <setting propertyKey="@Properties.AppVersion" title="@Strings.AppVersionTitle">
-        <settingConfig type="alphaNumeric" readonly="true" />
-    </setting>
-
     <setting propertyKey="@Properties.BottomInfo" title="@Strings.BottomInfoSettingTitle">
         <settingConfig type="list">
             <listEntry value="0">@Strings.BottomInfoSettingNone</listEntry>
