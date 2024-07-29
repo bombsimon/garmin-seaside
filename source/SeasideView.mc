@@ -151,9 +151,26 @@ class SeasideView extends WatchUi.WatchFace {
             Graphics.TEXT_JUSTIFY_LEFT
         );
 
+        // Draw the two dots above the minute digits.
+        dc.setColor(mAccentColor, mAccentColor);
+        dc.fillRectangle(
+            width / 2 + minuteDimentions[0] * 1.5,
+            height / 2 - minuteDimentions[1] / 9,
+            width / 90,
+            width / 90
+        );
+
+        dc.fillRectangle(
+            width / 2 + minuteDimentions[0] * 1.8,
+            height / 2 - minuteDimentions[1] / 9,
+            width / 90,
+            width / 90
+        );
+
         // Draw the current day.
         var tinyDimensions = dc.getTextDimensions("0", mediumFont);
 
+        dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             width / 2,
             height / 2 + tinyDimensions[1] / 1.1,
