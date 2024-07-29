@@ -10,29 +10,27 @@ import Toybox.Application.Properties;
 import Arms;
 
 class SeasideView extends WatchUi.WatchFace {
-    var nunito90 as WatchUi.FontResource;
-    var nunito36 as WatchUi.FontResource;
-    var nunito18 as WatchUi.FontResource;
-    var nunito12 as WatchUi.FontResource;
+    var largeFont as WatchUi.FontResource;
+    var mediumFont as WatchUi.FontResource;
+    var smallFont as WatchUi.FontResource;
+    var tinyFont as WatchUi.FontResource;
     var stepsIcon as Graphics.BitmapReference;
 
     var mBottomInfo as Number = 1;
     var mAccentColor as Number = Graphics.COLOR_YELLOW;
     var mAlwaysShowBattery as Boolean = false;
 
+    var mHourXOffset as Number = 0;
+    var mHourYOffset as Number = 0;
+
     function initialize() {
-        nunito90 =
-            WatchUi.loadResource(Rez.Fonts.nunitoBlack90) as
-            WatchUi.FontResource;
-        nunito36 =
-            WatchUi.loadResource(Rez.Fonts.nunitoRegular36) as
-            WatchUi.FontResource;
-        nunito18 =
-            WatchUi.loadResource(Rez.Fonts.nunitoRegular18) as
-            WatchUi.FontResource;
-        nunito12 =
-            WatchUi.loadResource(Rez.Fonts.nunitoRegular12) as
-            WatchUi.FontResource;
+        largeFont =
+            WatchUi.loadResource(Rez.Fonts.large) as WatchUi.FontResource;
+        mediumFont =
+            WatchUi.loadResource(Rez.Fonts.medium) as WatchUi.FontResource;
+        smallFont =
+            WatchUi.loadResource(Rez.Fonts.small) as WatchUi.FontResource;
+        tinyFont = WatchUi.loadResource(Rez.Fonts.tiny) as WatchUi.FontResource;
         stepsIcon =
             WatchUi.loadResource(Rez.Drawables.StepsIconYellow) as
             Graphics.BitmapReference;
@@ -130,30 +128,36 @@ class SeasideView extends WatchUi.WatchFace {
         dc.fillRectangle(0, 0, width, height - height / 6);
 
         // Draw the hour digits.
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
+        var hourDimentions = dc.getTextDimensions("0", largeFont);
+
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
-            width / 2 + 20,
-            height / 2 - 80,
-            nunito90,
+            width / 2 + hourDimentions[0] / 2,
+            height / 2 - hourDimentions[1] / 1.7,
+            largeFont,
             currentHour,
             Graphics.TEXT_JUSTIFY_RIGHT
         );
 
         // Draw the minute digits.
-        dc.setColor(mAccentColor, Graphics.COLOR_BLACK);
+        var minuteDimentions = dc.getTextDimensions(currentMinute, mediumFont);
+
+        dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
-            width / 2 + 25,
-            height / 2 - 38,
-            nunito36,
+            width / 2 + minuteDimentions[0] * 1.2,
+            height / 2 - minuteDimentions[1] / 6,
+            mediumFont,
             currentMinute,
             Graphics.TEXT_JUSTIFY_LEFT
         );
 
         // Draw the current day.
+        var tinyDimensions = dc.getTextDimensions("0", mediumFont);
+
         dc.drawText(
             width / 2,
-            height / 2 + 2,
-            nunito12,
+            height / 2 + tinyDimensions[1] / 1.1,
+            tinyFont,
             getDayOfWeek(dateInfo.day_of_week as Number),
             Graphics.TEXT_JUSTIFY_CENTER
         );
@@ -165,11 +169,12 @@ class SeasideView extends WatchUi.WatchFace {
             }
 
             var batteryText = Lang.format("$1$%", [batteryInfo.format("%2d")]);
+
             dc.setColor(batteryTextColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 width / 2,
-                height / 2 + 20,
-                nunito18,
+                height / 2 + tinyDimensions[1] / 1.6,
+                tinyFont,
                 batteryText,
                 Graphics.TEXT_JUSTIFY_CENTER
             );
@@ -177,26 +182,35 @@ class SeasideView extends WatchUi.WatchFace {
 
         // Current steps
         if (mBottomInfo == 1) {
-            dc.drawBitmap(width / 2 - 25, accentColorStart - 25, stepsIcon);
-            dc.setColor(mAccentColor, Graphics.COLOR_BLACK);
+            // dc.drawBitmap(width / 2 - 25, accentColorStart - 25, stepsIcon);
+            dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 width / 2,
-                accentColorStart - 25,
-                nunito18,
-                Lang.format("$1$", [steps]),
-                Graphics.TEXT_JUSTIFY_LEFT
+                accentColorStart - tinyDimensions[1] / 3,
+                tinyFont,
+                Lang.format("#$1$", [steps]),
+                Graphics.TEXT_JUSTIFY_CENTER
             );
         }
 
         // Draw the current date.
+        var dateDimensions = dc.getTextDimensions("0", smallFont);
+
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             width / 2,
-            midOfAccentColor - 10,
-            nunito18,
+            midOfAccentColor - dateDimensions[1] / 2,
+            smallFont,
             currentDateString,
             Graphics.TEXT_JUSTIFY_CENTER
         );
+
+        // Debug center cross.
+        // dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_GREEN);
+        // dc.drawLine(width / 2, 0, width / 2, height);
+
+        // dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_BLUE);
+        // dc.drawLine(0, height / 2, width, height / 2);
 
         // To draw a seconds indicator we need to figure out the outer circle of
         // the watch face for each second.
@@ -275,19 +289,19 @@ class SeasideView extends WatchUi.WatchFace {
     function getDayOfWeek(dayOfWeek as Number) as String {
         switch (dayOfWeek) {
             case Time.Gregorian.DAY_MONDAY:
-                return "MONDAY";
+                return "M  O  N  D  A  Y";
             case Time.Gregorian.DAY_TUESDAY:
-                return "TUESDAY";
+                return "T  U E  S  D  A  Y";
             case Time.Gregorian.DAY_WEDNESDAY:
-                return "WEDNESDAY";
+                return "W  E  D  N  E  S  D  A  Y";
             case Time.Gregorian.DAY_THURSDAY:
-                return "THURSDAY";
+                return "T  H  U  R  S  D  A  Y";
             case Time.Gregorian.DAY_FRIDAY:
-                return "FRIDAY";
+                return "F  R  I  D  A  Y";
             case Time.Gregorian.DAY_SATURDAY:
-                return "SATURDAY";
+                return "S  A  T  U  R  D A  Y";
             case Time.Gregorian.DAY_SUNDAY:
-                return "SUNDAY";
+                return "S  U  N  D  A  Y";
         }
 
         return "UNKNOWN";
