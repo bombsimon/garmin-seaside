@@ -173,7 +173,7 @@ class SeasideView extends WatchUi.WatchFace {
             dc.setColor(batteryTextColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 width / 2,
-                height / 2 + tinyDimensions[1] / 1.6,
+                height / 2 + tinyDimensions[1] / 1.5,
                 tinyFont,
                 batteryText,
                 Graphics.TEXT_JUSTIFY_CENTER
@@ -186,7 +186,7 @@ class SeasideView extends WatchUi.WatchFace {
             dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 width / 2,
-                accentColorStart - tinyDimensions[1] / 3,
+                accentColorStart - tinyDimensions[1] / 2.8,
                 tinyFont,
                 Lang.format("#$1$", [steps]),
                 Graphics.TEXT_JUSTIFY_CENTER
@@ -199,7 +199,7 @@ class SeasideView extends WatchUi.WatchFace {
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             width / 2,
-            midOfAccentColor - dateDimensions[1] / 2,
+            midOfAccentColor - dateDimensions[1] / 1.9,
             smallFont,
             currentDateString,
             Graphics.TEXT_JUSTIFY_CENTER
