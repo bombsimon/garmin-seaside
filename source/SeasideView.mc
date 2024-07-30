@@ -14,14 +14,12 @@ class SeasideView extends WatchUi.WatchFace {
     var mediumFont as WatchUi.FontResource;
     var smallFont as WatchUi.FontResource;
     var tinyFont as WatchUi.FontResource;
-    var stepsIcon as Graphics.BitmapReference;
 
     var mBottomInfo as Number = 1;
-    var mAccentColor as Number = Graphics.COLOR_YELLOW;
+    var mAccentColor as Number = 0xffcc00;
     var mAlwaysShowBattery as Boolean = false;
 
-    var mHourXOffset as Number = 0;
-    var mHourYOffset as Number = 0;
+    var mCoordinates as Dictionary<Symbol, Float>;
 
     function initialize() {
         largeFont =
@@ -31,9 +29,6 @@ class SeasideView extends WatchUi.WatchFace {
         smallFont =
             WatchUi.loadResource(Rez.Fonts.small) as WatchUi.FontResource;
         tinyFont = WatchUi.loadResource(Rez.Fonts.tiny) as WatchUi.FontResource;
-        stepsIcon =
-            WatchUi.loadResource(Rez.Drawables.StepsIconYellow) as
-            Graphics.BitmapReference;
 
         onSettingsChanged();
 
@@ -48,43 +43,7 @@ class SeasideView extends WatchUi.WatchFace {
     function onSettingsChanged() as Void {
         mBottomInfo = getPropertyValue("BottomInfo") as Number;
         mAlwaysShowBattery = getPropertyValue("AlwaysShowBattery") as Boolean;
-        var accentColor = getPropertyValue("AccentColor") as Number;
-
-        switch (accentColor) {
-            case 1:
-                if (Graphics has :createColor) {
-                    mAccentColor = Graphics.createColor(255, 254, 37, 80);
-                } else {
-                    // Best effort for devices not supporting API 4.0.0.
-                    // This will most likely not render nice on the device.
-                    mAccentColor = 0xfe2546;
-                }
-
-                stepsIcon =
-                    WatchUi.loadResource(Rez.Drawables.StepsIconRed) as
-                    Graphics.BitmapReference;
-
-                break;
-            case 2:
-                if (Graphics has :createColor) {
-                    mAccentColor = Graphics.createColor(255, 37, 254, 202);
-                } else {
-                    // Best effort for devices not supporting API 4.0.0.
-                    // This will most likely not render nice on the device.
-                    mAccentColor = 0x25feca;
-                }
-
-                stepsIcon =
-                    WatchUi.loadResource(Rez.Drawables.StepsIconMint) as
-                    Graphics.BitmapReference;
-
-                break;
-            default:
-                mAccentColor = Graphics.COLOR_YELLOW;
-                stepsIcon =
-                    WatchUi.loadResource(Rez.Drawables.StepsIconYellow) as
-                    Graphics.BitmapReference;
-        }
+        mAccentColor = getPropertyValue("AccentColor") as Number;
 
         WatchUi.requestUpdate();
     }
@@ -98,8 +57,8 @@ class SeasideView extends WatchUi.WatchFace {
     function onUpdate(dc) {
         var width = dc.getWidth();
         var height = dc.getHeight();
-        var clockTime = System.getClockTime();
 
+        var clockTime = System.getClockTime();
         var currentHour = clockTime.hour.format("%02d");
         var currentMinute = clockTime.min.format("%02d");
         var dateInfo = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
@@ -116,8 +75,7 @@ class SeasideView extends WatchUi.WatchFace {
         var halfAccentColor = accentColorHeight / 2;
         var midOfAccentColor = height - halfAccentColor;
 
-        var info = ActivityMonitor.getInfo();
-        var steps = info.steps;
+        var activityInfo = ActivityMonitor.getInfo();
 
         // Draw the entire background in the accent color.
         dc.setColor(mAccentColor, Graphics.COLOR_WHITE);
@@ -127,25 +85,58 @@ class SeasideView extends WatchUi.WatchFace {
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
         dc.fillRectangle(0, 0, width, height - height / 6);
 
+        // Settings
+        var showDebugLines = getPropertyValue("ShowDebugLines") as Boolean;
+        var hourWidthScale = getPropertyValue("HourWidthScale") as Float;
+        var hourHeightScale = getPropertyValue("HourHeightScale") as Float;
+        var minuteWidthScale = getPropertyValue("MinuteWidthScale") as Float;
+        var minuteHeightScale = getPropertyValue("MinuteHeightScale") as Float;
+        var dotHeightScale = getPropertyValue("DotHeightScale") as Float;
+        var firstDotWidthScale =
+            getPropertyValue("FirstDotWidthScale") as Float;
+        var secondDotWidthScale =
+            getPropertyValue("SecondDotWidthScale") as Float;
+        var dayHeightScale = getPropertyValue("DayHeightScale") as Float;
+        var batteryHeightScale =
+            getPropertyValue("BatteryHeightScale") as Float;
+        var bottomInfoHeightScale =
+            getPropertyValue("BottomInfoHeightScale") as Float;
+        var dateHeightScale = getPropertyValue("DateHeightScale") as Float;
+
+        var debugHourValue = getPropertyValue("DebugHourValue") as String;
+        var debugMinuteValue = getPropertyValue("DebugMinuteValue") as String;
+        var debugDayValue = getPropertyValue("DebugDayValue") as String;
+        var debugDateValue = getPropertyValue("DebugDateValue") as String;
+        var debugBottomInfoValue =
+            getPropertyValue("DebugBottomInfoValue") as String;
+
         // Draw the hour digits.
+        if (!debugHourValue.equals("")) {
+            currentHour = debugHourValue;
+        }
+
         var hourDimentions = dc.getTextDimensions("0", largeFont);
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
-            width / 2 + hourDimentions[0] / 2,
-            height / 2 - hourDimentions[1] / 1.7,
+            width / 2 + hourDimentions[0] / hourWidthScale,
+            height / 2 - hourDimentions[1] / hourHeightScale,
             largeFont,
             currentHour,
             Graphics.TEXT_JUSTIFY_RIGHT
         );
 
         // Draw the minute digits.
-        var minuteDimentions = dc.getTextDimensions(currentMinute, mediumFont);
+        if (!debugMinuteValue.equals("")) {
+            currentMinute = debugMinuteValue;
+        }
+
+        var minuteDimentions = dc.getTextDimensions("0", mediumFont);
 
         dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
-            width / 2 + minuteDimentions[0] * 1.2,
-            height / 2 - minuteDimentions[1] / 6,
+            width / 2 + minuteDimentions[0] * minuteWidthScale,
+            height / 2 - minuteDimentions[1] / minuteHeightScale,
             mediumFont,
             currentMinute,
             Graphics.TEXT_JUSTIFY_LEFT
@@ -154,28 +145,33 @@ class SeasideView extends WatchUi.WatchFace {
         // Draw the two dots above the minute digits.
         dc.setColor(mAccentColor, mAccentColor);
         dc.fillRectangle(
-            width / 2 + minuteDimentions[0] * 1.5,
-            height / 2 - minuteDimentions[1] / 9,
+            width / 2 + minuteDimentions[0] * firstDotWidthScale,
+            height / 2 - minuteDimentions[1] / dotHeightScale,
             width / 90,
             width / 90
         );
 
         dc.fillRectangle(
-            width / 2 + minuteDimentions[0] * 1.8,
-            height / 2 - minuteDimentions[1] / 9,
+            width / 2 + minuteDimentions[0] * secondDotWidthScale,
+            height / 2 - minuteDimentions[1] / dotHeightScale,
             width / 90,
             width / 90
         );
 
         // Draw the current day.
+        var currentDay = getDayOfWeek(dateInfo.day_of_week as Number);
+        if (!debugDayValue.equals("")) {
+            currentDay = debugDayValue;
+        }
+
         var tinyDimensions = dc.getTextDimensions("0", mediumFont);
 
         dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             width / 2,
-            height / 2 + tinyDimensions[1] / 1.1,
+            height / 2 + tinyDimensions[1] / dayHeightScale,
             tinyFont,
-            getDayOfWeek(dateInfo.day_of_week as Number),
+            currentDay,
             Graphics.TEXT_JUSTIFY_CENTER
         );
 
@@ -190,7 +186,7 @@ class SeasideView extends WatchUi.WatchFace {
             dc.setColor(batteryTextColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 width / 2,
-                height / 2 + tinyDimensions[1] / 1.5,
+                height / 2 + tinyDimensions[1] / batteryHeightScale,
                 tinyFont,
                 batteryText,
                 Graphics.TEXT_JUSTIFY_CENTER
@@ -198,36 +194,46 @@ class SeasideView extends WatchUi.WatchFace {
         }
 
         // Current steps
-        if (mBottomInfo == 1) {
-            // dc.drawBitmap(width / 2 - 25, accentColorStart - 25, stepsIcon);
+        if (mBottomInfo == 1 || !debugBottomInfoValue.equals("")) {
+            var text = Lang.format("#$1$", [activityInfo.steps]);
+            if (!debugBottomInfoValue.equals("")) {
+                text = debugBottomInfoValue;
+            }
+
             dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 width / 2,
-                accentColorStart - tinyDimensions[1] / 2.8,
+                accentColorStart - tinyDimensions[1] / bottomInfoHeightScale,
                 tinyFont,
-                Lang.format("#$1$", [steps]),
+                text,
                 Graphics.TEXT_JUSTIFY_CENTER
             );
         }
 
         // Draw the current date.
+        if (!debugDateValue.equals("")) {
+            currentDateString = debugDateValue;
+        }
+
         var dateDimensions = dc.getTextDimensions("0", smallFont);
 
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             width / 2,
-            midOfAccentColor - dateDimensions[1] / 1.9,
+            midOfAccentColor - dateDimensions[1] / dateHeightScale,
             smallFont,
             currentDateString,
             Graphics.TEXT_JUSTIFY_CENTER
         );
 
         // Debug center cross.
-        // dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_GREEN);
-        // dc.drawLine(width / 2, 0, width / 2, height);
+        if (showDebugLines) {
+            dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_GREEN);
+            dc.drawLine(width / 2, 0, width / 2, height);
 
-        // dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_BLUE);
-        // dc.drawLine(0, height / 2, width, height / 2);
+            dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_BLUE);
+            dc.drawLine(0, height / 2, width, height / 2);
+        }
 
         // To draw a seconds indicator we need to figure out the outer circle of
         // the watch face for each second.

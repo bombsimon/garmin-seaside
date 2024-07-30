@@ -8,13 +8,67 @@
 
     <setting propertyKey="@Properties.AccentColor" title="@Strings.AccentColorSettingTitle">
         <settingConfig type="list">
-            <listEntry value="0">@Strings.AccentColorSettingYellow</listEntry>
-            <listEntry value="1">@Strings.AccentColorSettingRed</listEntry>
-            <listEntry value="2">@Strings.AccentColorSettingMint</listEntry>
+            <listEntry value="0xffcc00">@Strings.AccentColorSettingYellow</listEntry>
+            <listEntry value="0xfe2550">@Strings.AccentColorSettingRed</listEntry>
+            <listEntry value="0x25feca">@Strings.AccentColorSettingMint</listEntry>
         </settingConfig>
     </setting>
 
     <setting propertyKey="@Properties.AlwaysShowBattery" title="@Strings.AlwaysShowBatteryTitle">
         <settingConfig type="boolean" />
+    </setting>
+
+    <setting propertyKey="@Properties.HourWidthScale" title="Hour width scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.HourHeightScale" title="Hour height scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.MinuteWidthScale" title="Minute width scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.MinuteHeightScale" title="Minute height scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.DotHeightScale" title="Dot height scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.FirstDotWidthScale" title="First dot width scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.SecondDotWidthScale" title="Second dot width scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.DayHeightScale" title="Day height scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.BatteryHeightScale" title="Battery height scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.BottomInfoHeightScale" title="Bottom info height scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.DateHeightScale" title="Date height scale">
+        <settingConfig type="numeric" />
+    </setting>
+
+    <setting propertyKey="@Properties.ShowDebugLines" title="Show debug lines">
+        <settingConfig type="boolean" />
+    </setting>
+
+    <setting propertyKey="@Properties.DebugHourValue" title="Hour">
+        <settingConfig type="alphaNumeric" />
+    </setting>
+    <setting propertyKey="@Properties.DebugMinuteValue" title="Minute">
+        <settingConfig type="alphaNumeric" />
+    </setting>
+    <setting propertyKey="@Properties.DebugDayValue" title="Day">
+        <settingConfig type="alphaNumeric" />
+    </setting>
+    <setting propertyKey="@Properties.DebugDateValue" title="Date">
+        <settingConfig type="alphaNumeric" />
+    </setting>
+    <setting propertyKey="@Properties.DebugBottomInfoValue" title="Bottom info">
+        <settingConfig type="alphaNumeric" />
     </setting>
 </settings>
