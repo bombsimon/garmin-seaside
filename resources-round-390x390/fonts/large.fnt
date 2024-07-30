@@ -1,0 +1,27 @@
+info face="Oswald" size=-140 bold=1 italic=0 charset="" unicode=1 stretchH=100 smooth=1 aa=2 padding=0,0,0,0 spacing=0,0 outline=0
+common lineHeight=239 base=186 scaleW=256 scaleH=256 pages=2 packed=0 alphaChnl=0 redChnl=0 greenChnl=0 blueChnl=0
+page id=0 file="large_0.png"
+page id=1 file="large_1.png"
+chars count=10
+char id=48   x=63    y=0     width=62    height=118   xoffset=8     yoffset=70    xadvance=77    page=0  chnl=15
+char id=49   x=54    y=0     width=39    height=114   xoffset=3     yoffset=72    xadvance=54    page=1  chnl=15
+char id=50   x=123   y=118   width=63    height=115   xoffset=5     yoffset=71    xadvance=72    page=0  chnl=15
+char id=51   x=0     y=0     width=63    height=118   xoffset=5     yoffset=70    xadvance=72    page=0  chnl=15
+char id=52   x=186   y=117   width=68    height=114   xoffset=3     yoffset=72    xadvance=73    page=0  chnl=15
+char id=53   x=62    y=118   width=61    height=116   xoffset=6     yoffset=72    xadvance=71    page=0  chnl=15
+char id=54   x=125   y=0     width=63    height=117   xoffset=7     yoffset=71    xadvance=75    page=0  chnl=15
+char id=55   x=0     y=0     width=54    height=114   xoffset=3     yoffset=72    xadvance=61    page=1  chnl=15
+char id=56   x=0     y=118   width=62    height=117   xoffset=5     yoffset=71    xadvance=73    page=0  chnl=15
+char id=57   x=188   y=0     width=63    height=117   xoffset=5     yoffset=71    xadvance=75    page=0  chnl=15
+kernings count=11
+kerning first=57  second=55  amount=-2  
+kerning first=56  second=55  amount=-1  
+kerning first=50  second=52  amount=-2  
+kerning first=52  second=49  amount=-2  
+kerning first=52  second=55  amount=-1  
+kerning first=53  second=55  amount=-2  
+kerning first=54  second=49  amount=-1  
+kerning first=54  second=50  amount=-1  
+kerning first=54  second=55  amount=-1  
+kerning first=54  second=57  amount=-2  
+kerning first=55  second=52  amount=-3  
