@@ -10,26 +10,71 @@ import Toybox.Application.Properties;
 import Arms;
 
 class SeasideView extends WatchUi.WatchFace {
-    var largeFont as WatchUi.FontResource;
-    var mediumFont as WatchUi.FontResource;
-    var smallFont as WatchUi.FontResource;
-    var tinyFont as WatchUi.FontResource;
+    // Watchface fonts
+    private var _largeFont as WatchUi.FontResource =
+        WatchUi.loadResource(Rez.Fonts.large) as WatchUi.FontResource;
+    private var _mediumFont as WatchUi.FontResource =
+        WatchUi.loadResource(Rez.Fonts.medium) as WatchUi.FontResource;
+    private var _smallFont as WatchUi.FontResource =
+        WatchUi.loadResource(Rez.Fonts.small) as WatchUi.FontResource;
+    private var _tinyFont as WatchUi.FontResource =
+        WatchUi.loadResource(Rez.Fonts.tiny) as WatchUi.FontResource;
 
-    var mBottomInfo as Number = 1;
-    var mAccentColor as Number = 0xffcc00;
-    var mShowBatteryThrehsold as Number = 20;
+    // Watchface customization settings
+    private var _bottomInfo as Number = 1;
+    private var _accentColor as Number = 0xffcc00;
+    private var _showBatteryThreshold as Number = 20;
+
+    // Scaling settings. These are static and the same for all devices but setup
+    // as properties to make debugging easier when trying out new fonts. Might
+    // come in handy if font customization becomes a thing. (Hello from
+    // pre-mature optimization land).
+    private var _hourWidthScale as Float =
+        getPropertyValue("HourWidthScale") as Float;
+    private var _hourHeightScale as Float =
+        getPropertyValue("HourHeightScale") as Float;
+    private var _minuteWidthScale as Float =
+        getPropertyValue("MinuteWidthScale") as Float;
+    private var _minuteHeightScale as Float =
+        getPropertyValue("MinuteHeightScale") as Float;
+    private var _dotSizeScale as Float =
+        getPropertyValue("DotSizeScale") as Float;
+    private var _dotHeightScale as Float =
+        getPropertyValue("DotHeightScale") as Float;
+    private var _firstDotWidthScale as Float =
+        getPropertyValue("FirstDotWidthScale") as Float;
+    private var _secondDotWidthScale as Float =
+        getPropertyValue("SecondDotWidthScale") as Float;
+    private var _dayHeightScale as Float =
+        getPropertyValue("DayHeightScale") as Float;
+    private var _batteryHeightScale as Float =
+        getPropertyValue("BatteryHeightScale") as Float;
+    private var _bottomInfoHeightScale as Float =
+        getPropertyValue("BottomInfoHeightScale") as Float;
+    private var _dateHeightScale as Float =
+        getPropertyValue("DateHeightScale") as Float;
+
+    // Font dimensions are stored as memeber varaibles to only have to load them
+    // once. When loaded the first time, `_dimensionsInitialized` will be set to
+    // true.
+    private var _dimensionsInitialized as Boolean = false;
+    private var _hourDimensions as Array<Number> = [0, 0];
+    private var _minuteDimensions as Array<Number> = [0, 0];
+    private var _tinyDimensions as Array<Number> = [0, 0];
+    private var _dateDimensions as Array<Number> = [0, 0];
+
+    // Debug settings used to show guide lines and customize any value.
+    // Enable debug settings and will load debug properties when settings
+    // change.
+    private var _debugMode as Boolean = false;
+    private var _showDebugLines as Boolean = false;
+    private var _debugHourValue as String = "";
+    private var _debugMinuteValue as String = "";
+    private var _debugDayValue as String = "";
+    private var _debugDateValue as String = "";
+    private var _debugBottomInfoValue as String = "";
 
     function initialize() {
-        largeFont =
-            WatchUi.loadResource(Rez.Fonts.large) as WatchUi.FontResource;
-        mediumFont =
-            WatchUi.loadResource(Rez.Fonts.medium) as WatchUi.FontResource;
-        smallFont =
-            WatchUi.loadResource(Rez.Fonts.small) as WatchUi.FontResource;
-        tinyFont = WatchUi.loadResource(Rez.Fonts.tiny) as WatchUi.FontResource;
-
-        onSettingsChanged();
-
         WatchFace.initialize();
     }
 
@@ -39,17 +84,50 @@ class SeasideView extends WatchUi.WatchFace {
     }
 
     function onSettingsChanged() as Void {
-        mBottomInfo = getPropertyValue("BottomInfo") as Number;
-        mShowBatteryThrehsold =
+        _bottomInfo = getPropertyValue("BottomInfo") as Number;
+        _showBatteryThreshold =
             getPropertyValue("ShowBatteryThreshold") as Number;
-        mAccentColor = getPropertyValue("AccentColor") as Number;
+        _accentColor = getPropertyValue("AccentColor") as Number;
+
+        onDebugSettingsChanged();
+
+        WatchUi.requestUpdate();
+    }
+
+    function onDebugSettingsChanged() as Void {
+        if (!_debugMode) {
+            return;
+        }
 
         var accentColorHex = getPropertyValue("AccentColorHex") as String;
         if (!accentColorHex.equals("")) {
-            mAccentColor = accentColorHex.toNumberWithBase(0x10) as Number;
+            var maybeAccentColor =
+                accentColorHex.toNumberWithBase(0x10) as Number?;
+            if (maybeAccentColor != null) {
+                _accentColor = maybeAccentColor;
+            }
         }
 
-        WatchUi.requestUpdate();
+        _hourWidthScale = getPropertyValue("HourWidthScale") as Float;
+        _hourHeightScale = getPropertyValue("HourHeightScale") as Float;
+        _minuteWidthScale = getPropertyValue("MinuteWidthScale") as Float;
+        _minuteHeightScale = getPropertyValue("MinuteHeightScale") as Float;
+        _dotHeightScale = getPropertyValue("DotHeightScale") as Float;
+        _firstDotWidthScale = getPropertyValue("FirstDotWidthScale") as Float;
+        _secondDotWidthScale = getPropertyValue("SecondDotWidthScale") as Float;
+        _dayHeightScale = getPropertyValue("DayHeightScale") as Float;
+        _batteryHeightScale = getPropertyValue("BatteryHeightScale") as Float;
+        _bottomInfoHeightScale =
+            getPropertyValue("BottomInfoHeightScale") as Float;
+        _dateHeightScale = getPropertyValue("DateHeightScale") as Float;
+
+        _showDebugLines = getPropertyValue("ShowDebugLines") as Boolean;
+        _debugHourValue = getPropertyValue("DebugHourValue") as String;
+        _debugMinuteValue = getPropertyValue("DebugMinuteValue") as String;
+        _debugDayValue = getPropertyValue("DebugDayValue") as String;
+        _debugDateValue = getPropertyValue("DebugDateValue") as String;
+        _debugBottomInfoValue =
+            getPropertyValue("DebugBottomInfoValue") as String;
     }
 
     // Called when this View is brought to the foreground. Restore
@@ -62,10 +140,23 @@ class SeasideView extends WatchUi.WatchFace {
         var width = dc.getWidth();
         var height = dc.getHeight();
 
+        var middleX = width / 2;
+
+        // On tiny devices with a resolution < 240 there's not enought room to
+        // use halft the screen (height / 2) so we scale by starting everything
+        // a bit higher up.
+        var middleY = 0.0;
+        if (height < 240) {
+            middleY = height / 2.5;
+        } else {
+            middleY = height / 2;
+        }
+
         var clockTime = System.getClockTime();
         var currentHour = clockTime.hour.format("%02d");
         var currentMinute = clockTime.min.format("%02d");
         var dateInfo = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
+        var currentDay = getDayOfWeek(dateInfo.day_of_week as Number);
         var currentDateString = Lang.format("$1$ $2$ $3$", [
             dateInfo.day,
             getMonth(dateInfo.month as Number),
@@ -79,164 +170,130 @@ class SeasideView extends WatchUi.WatchFace {
         var halfAccentColor = accentColorHeight / 2;
         var midOfAccentColor = height - halfAccentColor;
 
-        var activityInfo = ActivityMonitor.getInfo();
+        if (!_dimensionsInitialized) {
+            _hourDimensions = dc.getTextDimensions("0", _largeFont);
+            _minuteDimensions = dc.getTextDimensions("0", _mediumFont);
+            _tinyDimensions = dc.getTextDimensions("0", _mediumFont);
+            _dateDimensions = dc.getTextDimensions("0", _smallFont);
+            _dimensionsInitialized = true;
+        }
+
+        if (_debugMode) {
+            if (!_debugHourValue.equals("")) {
+                currentHour = _debugHourValue;
+            }
+
+            if (!_debugMinuteValue.equals("")) {
+                currentMinute = _debugMinuteValue;
+            }
+
+            if (!_debugDateValue.equals("")) {
+                currentDateString = _debugDateValue;
+            }
+
+            if (!_debugDayValue.equals("")) {
+                currentDay = _debugDayValue;
+            }
+        }
 
         // Draw the entire background in the accent color.
-        dc.setColor(mAccentColor, Graphics.COLOR_WHITE);
+        dc.setColor(_accentColor, Graphics.COLOR_WHITE);
         dc.fillRectangle(0, 0, width, height);
 
         // Draw the background black for 5/6 of the screen.
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
         dc.fillRectangle(0, 0, width, height - height / 6);
 
-        // Settings
-        var showDebugLines = getPropertyValue("ShowDebugLines") as Boolean;
-        var hourWidthScale = getPropertyValue("HourWidthScale") as Float;
-        var hourHeightScale = getPropertyValue("HourHeightScale") as Float;
-        var minuteWidthScale = getPropertyValue("MinuteWidthScale") as Float;
-        var minuteHeightScale = getPropertyValue("MinuteHeightScale") as Float;
-        var dotHeightScale = getPropertyValue("DotHeightScale") as Float;
-        var firstDotWidthScale =
-            getPropertyValue("FirstDotWidthScale") as Float;
-        var secondDotWidthScale =
-            getPropertyValue("SecondDotWidthScale") as Float;
-        var dayHeightScale = getPropertyValue("DayHeightScale") as Float;
-        var batteryHeightScale =
-            getPropertyValue("BatteryHeightScale") as Float;
-        var bottomInfoHeightScale =
-            getPropertyValue("BottomInfoHeightScale") as Float;
-        var dateHeightScale = getPropertyValue("DateHeightScale") as Float;
-
-        var debugHourValue = getPropertyValue("DebugHourValue") as String;
-        var debugMinuteValue = getPropertyValue("DebugMinuteValue") as String;
-        var debugDayValue = getPropertyValue("DebugDayValue") as String;
-        var debugDateValue = getPropertyValue("DebugDateValue") as String;
-        var debugBottomInfoValue =
-            getPropertyValue("DebugBottomInfoValue") as String;
-
-        // On tiny devices with a resolution < 240 there's not enought room to
-        // use halft the screen (height / 2) so we scale by starting everything
-        // a bit higher up.
-        var middleHeightFactor = 2;
-        if (height < 240) {
-            middleHeightFactor = 2.5;
-        }
-
         // Draw the hour digits.
-        if (!debugHourValue.equals("")) {
-            currentHour = debugHourValue;
-        }
-
-        var hourDimentions = dc.getTextDimensions("0", largeFont);
-
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
-            width / 2 + hourDimentions[0] / hourWidthScale,
-            height / middleHeightFactor - hourDimentions[1] / hourHeightScale,
-            largeFont,
+            middleX + _hourDimensions[0] / _hourWidthScale,
+            middleY - _hourDimensions[1] / _hourHeightScale,
+            _largeFont,
             currentHour,
             Graphics.TEXT_JUSTIFY_RIGHT
         );
 
         // Draw the minute digits.
-        if (!debugMinuteValue.equals("")) {
-            currentMinute = debugMinuteValue;
-        }
-
-        var minuteDimentions = dc.getTextDimensions("0", mediumFont);
-
-        dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(_accentColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
-            width / 2 + minuteDimentions[0] * minuteWidthScale,
-            height / middleHeightFactor -
-                minuteDimentions[1] / minuteHeightScale,
-            mediumFont,
+            middleX + _minuteDimensions[0] * _minuteWidthScale,
+            middleY - _minuteDimensions[1] / _minuteHeightScale,
+            _mediumFont,
             currentMinute,
             Graphics.TEXT_JUSTIFY_LEFT
         );
 
         // Draw the two dots above the minute digits.
-        dc.setColor(mAccentColor, mAccentColor);
+        dc.setColor(_accentColor, _accentColor);
         dc.fillRectangle(
-            width / 2 + minuteDimentions[0] * firstDotWidthScale,
-            height / middleHeightFactor - minuteDimentions[1] / dotHeightScale,
-            width / 90,
-            width / 90
+            middleX + _minuteDimensions[0] * _firstDotWidthScale,
+            middleY - _minuteDimensions[1] / _dotHeightScale,
+            width / _dotSizeScale,
+            width / _dotSizeScale
         );
 
         dc.fillRectangle(
-            width / 2 + minuteDimentions[0] * secondDotWidthScale,
-            height / middleHeightFactor - minuteDimentions[1] / dotHeightScale,
-            width / 90,
-            width / 90
+            middleX + _minuteDimensions[0] * _secondDotWidthScale,
+            middleY - _minuteDimensions[1] / _dotHeightScale,
+            width / _dotSizeScale,
+            width / _dotSizeScale
         );
 
         // Draw the current day.
-        var currentDay = getDayOfWeek(dateInfo.day_of_week as Number);
-        if (!debugDayValue.equals("")) {
-            currentDay = debugDayValue;
-        }
-
-        var tinyDimensions = dc.getTextDimensions("0", mediumFont);
-
-        dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(_accentColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
-            width / 2,
-            height / middleHeightFactor + tinyDimensions[1] / dayHeightScale,
-            tinyFont,
+            middleX,
+            middleY + _tinyDimensions[1] / _dayHeightScale,
+            _tinyFont,
             currentDay,
             Graphics.TEXT_JUSTIFY_CENTER
         );
 
-        if (batteryInfo <= mShowBatteryThrehsold) {
+        if (batteryInfo <= _showBatteryThreshold) {
             var batteryText = Lang.format("$1$%", [batteryInfo.format("%2d")]);
 
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
-                width / 2,
-                height / middleHeightFactor +
-                    tinyDimensions[1] / batteryHeightScale,
-                tinyFont,
+                middleX,
+                middleY + _tinyDimensions[1] / _batteryHeightScale,
+                _tinyFont,
                 batteryText,
                 Graphics.TEXT_JUSTIFY_CENTER
             );
         }
 
-        // Current steps
-        if (mBottomInfo == 1 || !debugBottomInfoValue.equals("")) {
+        // Botton information (e.g. current steps)
+        if (_bottomInfo == 1) {
+            var activityInfo = ActivityMonitor.getInfo();
             var text = Lang.format("#$1$", [activityInfo.steps]);
-            if (!debugBottomInfoValue.equals("")) {
-                text = debugBottomInfoValue;
+
+            if (_debugMode && !_debugBottomInfoValue.equals("")) {
+                text = _debugBottomInfoValue;
             }
 
-            dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(_accentColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
-                width / 2,
-                accentColorStart - tinyDimensions[1] / bottomInfoHeightScale,
-                tinyFont,
+                middleX,
+                accentColorStart - _tinyDimensions[1] / _bottomInfoHeightScale,
+                _tinyFont,
                 text,
                 Graphics.TEXT_JUSTIFY_CENTER
             );
         }
 
         // Draw the current date.
-        if (!debugDateValue.equals("")) {
-            currentDateString = debugDateValue;
-        }
-
-        var dateDimensions = dc.getTextDimensions("0", smallFont);
-
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
-            width / 2,
-            midOfAccentColor - dateDimensions[1] / dateHeightScale,
-            smallFont,
+            middleX,
+            midOfAccentColor - _dateDimensions[1] / _dateHeightScale,
+            _smallFont,
             currentDateString,
             Graphics.TEXT_JUSTIFY_CENTER
         );
 
         // Debug center cross.
-        if (showDebugLines) {
+        if (_debugMode && _showDebugLines) {
             dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_GREEN);
             dc.drawLine(width / 2, 0, width / 2, height);
 
@@ -314,7 +371,7 @@ class SeasideView extends WatchUi.WatchFace {
         dc.fillCircle(x, y, 5);
 
         // Draw a smaller circle inside the bigger one.
-        dc.setColor(mAccentColor, Graphics.COLOR_WHITE);
+        dc.setColor(_accentColor, Graphics.COLOR_WHITE);
         dc.fillCircle(x, y, 3);
     }
 
