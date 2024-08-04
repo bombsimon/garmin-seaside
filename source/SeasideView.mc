@@ -19,8 +19,6 @@ class SeasideView extends WatchUi.WatchFace {
     var mAccentColor as Number = 0xffcc00;
     var mAlwaysShowBattery as Boolean = false;
 
-    var mCoordinates as Dictionary<Symbol, Float>;
-
     function initialize() {
         largeFont =
             WatchUi.loadResource(Rez.Fonts.large) as WatchUi.FontResource;
@@ -44,6 +42,11 @@ class SeasideView extends WatchUi.WatchFace {
         mBottomInfo = getPropertyValue("BottomInfo") as Number;
         mAlwaysShowBattery = getPropertyValue("AlwaysShowBattery") as Boolean;
         mAccentColor = getPropertyValue("AccentColor") as Number;
+
+        var accentColorHex = getPropertyValue("AccentColorHex") as String;
+        if (!accentColorHex.equals("")) {
+            mAccentColor = accentColorHex.toNumberWithBase(0x10) as Number;
+        }
 
         WatchUi.requestUpdate();
     }

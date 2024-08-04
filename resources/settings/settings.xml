@@ -13,6 +13,9 @@
             <listEntry value="0x25feca">@Strings.AccentColorSettingMint</listEntry>
         </settingConfig>
     </setting>
+    <setting propertyKey="@Properties.AccentColorHex" title="Custom color">
+        <settingConfig type="alphaNumeric" />
+    </setting>
 
     <setting propertyKey="@Properties.AlwaysShowBattery" title="@Strings.AlwaysShowBatteryTitle">
         <settingConfig type="boolean" />
