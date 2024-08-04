@@ -12,5 +12,5 @@
     <string id="AccentColorSettingRed">Red</string>
     <string id="AccentColorSettingMint">Mint</string>
 
-    <string id="AlwaysShowBatteryTitle">Always show battery level</string>
+    <string id="ShowBatteryThresholdTitle">Show battery threshold (0 = never, 100 = always)</string>
 </strings>

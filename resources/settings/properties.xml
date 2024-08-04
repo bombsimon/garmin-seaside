@@ -1,7 +1,7 @@
 <properties>
 	<property id="BottomInfo" type="number">1</property>
 	<property id="AccentColor" type="number">0</property>
-	<property id="AlwaysShowBattery" type="boolean">false</property>
+	<property id="ShowBatteryThreshold" type="number">20</property>
 
 	<property id="AccentColorHex" type="string"></property>
 
