@@ -3,20 +3,11 @@
 	<property id="AccentColor" type="number">0</property>
 	<property id="ShowBatteryThreshold" type="number">20</property>
 
-	<property id="AccentColorHex" type="string"></property>
-
-	<property id="ShowDebugLines" type="boolean">false</property>
-
-	<property id="DebugHourValue" type="string"></property>
-	<property id="DebugMinuteValue" type="string"></property>
-	<property id="DebugDayValue" type="string"></property>
-	<property id="DebugDateValue" type="string"></property>
-	<property id="DebugBottomInfoValue" type="string"></property>
-
 	<property id="HourWidthScale" type="float">2.0</property>
 	<property id="HourHeightScale" type="float">1.7</property>
 	<property id="MinuteWidthScale" type="float">2.3</property>
 	<property id="MinuteHeightScale" type="float">7.0</property>
+	<property id="DotSizeScale" type="float">90</property>
 	<property id="DotHeightScale" type="float">11.0</property>
 	<property id="FirstDotWidthScale" type="float">2.8</property>
 	<property id="SecondDotWidthScale" type="float">3.4</property>
@@ -24,4 +15,12 @@
 	<property id="BatteryHeightScale" type="float">1.6</property>
 	<property id="BottomInfoHeightScale" type="float">2.8</property>
 	<property id="DateHeightScale" type="float">1.5</property>
+
+	<property id="AccentColorHex" type="string"></property>
+	<property id="ShowDebugLines" type="boolean">false</property>
+	<property id="DebugHourValue" type="string"></property>
+	<property id="DebugMinuteValue" type="string"></property>
+	<property id="DebugDayValue" type="string"></property>
+	<property id="DebugDateValue" type="string"></property>
+	<property id="DebugBottomInfoValue" type="string"></property>
 </properties>
