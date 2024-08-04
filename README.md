@@ -1,22 +1,39 @@
 # Seaside
 
 Seaside is an attempt at a minimalistic Garmin watch face. This is heavily
-inspired by the watch mockup by [Commissioner Of
-design™](https://dribbble.com/shots/4945320-Digital-Watch-face/) since I thought
-it looked so nice. I'm still in the search of a better font and a better
-implementation. The current fon't used is
-[Nunito](https://fonts.google.com/specimen/Nunito) from Google. The font's has
-been converted to bitmap fonts according to the [Resource
-Compiler](https://developer.garmin.com/connect-iq/programmers-guide/resource-compiler)
-documentation, however the recommended application
-([BMFont](http://www.angelcode.com/products/bmfont/)) is only available for
-Windows and I'm still looking for a good (free) alternative for macOS.
+inspired by (copied form) the watch mockup by [Commissioner Of
+design™](https://dribbble.com/shots/4945320-Digital-Watch-face/) since I
+thought it looked so nice. The mockup exposes a
+[Figma](https://www.figma.com/file/LtmMgqxkZYt072YPx3A65uyQ/Digital-Watch-face?node-id=0%3A1)
+document where font and sizes can be found.
 
 <p float="left">
     <img src="./screenshots/fr965.png" alt="yellow" width="200"/>
     <img src="./screenshots/fr965-mint.png" alt="yellow" width="200"/>
     <img src="./screenshots/fr965-red.png" alt="yellow" width="200"/>
 </p>
+
+## Font
+
+The font used is [Oswald](https://fonts.google.com/specimen/Oswald). It's
+created with [BMFont](http://www.angelcode.com/products/bmfont/) with unique
+size per resolution. To get as little maintenance as possible, I tried to set
+all padding with relativity to the size of the text. This works on most
+resolutions but probably not all.
+
+See each resource `.fnt` file for size.
+
+### Icon map
+
+The `small` font is manually patched with a glyph for bottom info icons. This
+process is tedious and requires the step icon to be added to the font and
+manually adding bounds for it.
+
+| Icon | Char id | Character |
+| ---- | ------- | --------- |
+| Step | 35      | `#`       |
+
+Pack steps icon into font small, manually tracing its boundaries.
 
 ## Features
 
@@ -31,6 +48,7 @@ Windows and I'm still looking for a good (free) alternative for macOS.
 -   [Connect IQ Programmers
     Guide](https://developer.garmin.com/connect-iq/programmers-guide/)
 -   [API documentation](https://developer.garmin.com/connect-iq/api-docs/)
+-   [Screen sizes](https://developer.garmin.com/connect-iq/compatible-devices/)
 
 ## Build and run
 
