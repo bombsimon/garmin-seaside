@@ -17,7 +17,7 @@ class SeasideView extends WatchUi.WatchFace {
 
     var mBottomInfo as Number = 1;
     var mAccentColor as Number = 0xffcc00;
-    var mAlwaysShowBattery as Boolean = false;
+    var mShowBatteryThrehsold as Number = 20;
 
     function initialize() {
         largeFont =
@@ -40,7 +40,8 @@ class SeasideView extends WatchUi.WatchFace {
 
     function onSettingsChanged() as Void {
         mBottomInfo = getPropertyValue("BottomInfo") as Number;
-        mAlwaysShowBattery = getPropertyValue("AlwaysShowBattery") as Boolean;
+        mShowBatteryThrehsold =
+            getPropertyValue("ShowBatteryThreshold") as Number;
         mAccentColor = getPropertyValue("AccentColor") as Number;
 
         var accentColorHex = getPropertyValue("AccentColorHex") as String;
@@ -113,6 +114,14 @@ class SeasideView extends WatchUi.WatchFace {
         var debugBottomInfoValue =
             getPropertyValue("DebugBottomInfoValue") as String;
 
+        // On tiny devices with a resolution < 240 there's not enought room to
+        // use halft the screen (height / 2) so we scale by starting everything
+        // a bit higher up.
+        var middleHeightFactor = 2;
+        if (height < 240) {
+            middleHeightFactor = 2.5;
+        }
+
         // Draw the hour digits.
         if (!debugHourValue.equals("")) {
             currentHour = debugHourValue;
@@ -123,7 +132,7 @@ class SeasideView extends WatchUi.WatchFace {
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             width / 2 + hourDimentions[0] / hourWidthScale,
-            height / 2 - hourDimentions[1] / hourHeightScale,
+            height / middleHeightFactor - hourDimentions[1] / hourHeightScale,
             largeFont,
             currentHour,
             Graphics.TEXT_JUSTIFY_RIGHT
@@ -139,7 +148,8 @@ class SeasideView extends WatchUi.WatchFace {
         dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             width / 2 + minuteDimentions[0] * minuteWidthScale,
-            height / 2 - minuteDimentions[1] / minuteHeightScale,
+            height / middleHeightFactor -
+                minuteDimentions[1] / minuteHeightScale,
             mediumFont,
             currentMinute,
             Graphics.TEXT_JUSTIFY_LEFT
@@ -149,14 +159,14 @@ class SeasideView extends WatchUi.WatchFace {
         dc.setColor(mAccentColor, mAccentColor);
         dc.fillRectangle(
             width / 2 + minuteDimentions[0] * firstDotWidthScale,
-            height / 2 - minuteDimentions[1] / dotHeightScale,
+            height / middleHeightFactor - minuteDimentions[1] / dotHeightScale,
             width / 90,
             width / 90
         );
 
         dc.fillRectangle(
             width / 2 + minuteDimentions[0] * secondDotWidthScale,
-            height / 2 - minuteDimentions[1] / dotHeightScale,
+            height / middleHeightFactor - minuteDimentions[1] / dotHeightScale,
             width / 90,
             width / 90
         );
@@ -172,24 +182,20 @@ class SeasideView extends WatchUi.WatchFace {
         dc.setColor(mAccentColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             width / 2,
-            height / 2 + tinyDimensions[1] / dayHeightScale,
+            height / middleHeightFactor + tinyDimensions[1] / dayHeightScale,
             tinyFont,
             currentDay,
             Graphics.TEXT_JUSTIFY_CENTER
         );
 
-        if (mAlwaysShowBattery || batteryInfo <= 20) {
-            var batteryTextColor = Graphics.COLOR_WHITE;
-            if (batteryInfo <= 20) {
-                batteryTextColor = Graphics.COLOR_ORANGE;
-            }
-
+        if (batteryInfo <= mShowBatteryThrehsold) {
             var batteryText = Lang.format("$1$%", [batteryInfo.format("%2d")]);
 
-            dc.setColor(batteryTextColor, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 width / 2,
-                height / 2 + tinyDimensions[1] / batteryHeightScale,
+                height / middleHeightFactor +
+                    tinyDimensions[1] / batteryHeightScale,
                 tinyFont,
                 batteryText,
                 Graphics.TEXT_JUSTIFY_CENTER
