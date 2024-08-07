@@ -13,4 +13,6 @@
     <string id="AccentColorSettingMint">Mint</string>
 
     <string id="ShowBatteryThresholdTitle">Show battery threshold (0 = never, 100 = always)</string>
+
+    <string id="UseLargeFontTitle">Use large font</string>
 </strings>

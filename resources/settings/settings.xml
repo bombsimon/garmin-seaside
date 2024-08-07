@@ -15,9 +15,14 @@
     </setting>
 
     <setting propertyKey="@Properties.ShowBatteryThreshold" title="@Strings.ShowBatteryThresholdTitle">
-        <settingConfig type="numeric" />
+        <settingConfig type="numeric" required="true" />
     </setting>
 
+    <setting propertyKey="@Properties.UseLargeFont" title="@Strings.UseLargeFontTitle">
+        <settingConfig type="boolean" />
+    </setting>
+
+    <!-- -->
     <setting propertyKey="@Properties.AccentColorHex" title="Custom color">
         <settingConfig type="alphaNumeric" />
     </setting>
@@ -46,10 +51,16 @@
     <setting propertyKey="@Properties.DayHeightScale" title="Day height scale">
         <settingConfig type="numeric" />
     </setting>
+    <setting propertyKey="@Properties.DayHeightScaleLargeFont" title="Day height scale large font">
+        <settingConfig type="numeric" />
+    </setting>
     <setting propertyKey="@Properties.BatteryHeightScale" title="Battery height scale">
         <settingConfig type="numeric" />
     </setting>
     <setting propertyKey="@Properties.BottomInfoHeightScale" title="Bottom info height scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.BottomInfoHeightScaleLargeFont" title="Bottom info height scale large font">
         <settingConfig type="numeric" />
     </setting>
     <setting propertyKey="@Properties.DateHeightScale" title="Date height scale">
@@ -75,4 +86,5 @@
     <setting propertyKey="@Properties.DebugBottomInfoValue" title="Bottom info">
         <settingConfig type="alphaNumeric" />
     </setting>
+    <!-- -->
 </settings>
