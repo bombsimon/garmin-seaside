@@ -11,6 +11,8 @@ import Arms;
 
 class SeasideView extends WatchUi.WatchFace {
     // Watchface fonts
+    private var _useLargeFont as Boolean =
+        getPropertyValue("UseLargeFont") as Boolean;
     private var _largeFont as WatchUi.FontResource =
         WatchUi.loadResource(Rez.Fonts.large) as WatchUi.FontResource;
     private var _mediumFont as WatchUi.FontResource =
@@ -21,9 +23,12 @@ class SeasideView extends WatchUi.WatchFace {
         WatchUi.loadResource(Rez.Fonts.tiny) as WatchUi.FontResource;
 
     // Watchface customization settings
-    private var _bottomInfo as Number = 1;
-    private var _accentColor as Number = 0xffcc00;
-    private var _showBatteryThreshold as Number = 20;
+    private var _bottomInfo as Number =
+        getPropertyValue("BottomInfo") as Number;
+    private var _accentColor as Number =
+        getPropertyValue("AccentColor") as Number;
+    private var _showBatteryThreshold as Number =
+        getPropertyValue("ShowBatteryThreshold") as Number;
 
     // Scaling settings. These are static and the same for all devices but setup
     // as properties to make debugging easier when trying out new fonts. Might
@@ -47,10 +52,14 @@ class SeasideView extends WatchUi.WatchFace {
         getPropertyValue("SecondDotWidthScale") as Float;
     private var _dayHeightScale as Float =
         getPropertyValue("DayHeightScale") as Float;
+    private var _dayHeightScaleLargeFont as Float =
+        getPropertyValue("DayHeightScaleLargeFont") as Float;
     private var _batteryHeightScale as Float =
         getPropertyValue("BatteryHeightScale") as Float;
     private var _bottomInfoHeightScale as Float =
         getPropertyValue("BottomInfoHeightScale") as Float;
+    private var _bottomInfoHeightScaleLargeFont as Float =
+        getPropertyValue("BottomInfoHeightScaleLargeFont") as Float;
     private var _dateHeightScale as Float =
         getPropertyValue("DateHeightScale") as Float;
 
@@ -66,7 +75,7 @@ class SeasideView extends WatchUi.WatchFace {
     // Debug settings used to show guide lines and customize any value.
     // Enable debug settings and will load debug properties when settings
     // change.
-    private var _debugMode as Boolean = false;
+    private var _debugMode as Boolean = true;
     private var _showDebugLines as Boolean = false;
     private var _debugHourValue as String = "";
     private var _debugMinuteValue as String = "";
@@ -88,6 +97,7 @@ class SeasideView extends WatchUi.WatchFace {
         _showBatteryThreshold =
             getPropertyValue("ShowBatteryThreshold") as Number;
         _accentColor = getPropertyValue("AccentColor") as Number;
+        _useLargeFont = getPropertyValue("UseLargeFont") as Boolean;
 
         onDebugSettingsChanged();
 
@@ -116,9 +126,13 @@ class SeasideView extends WatchUi.WatchFace {
         _firstDotWidthScale = getPropertyValue("FirstDotWidthScale") as Float;
         _secondDotWidthScale = getPropertyValue("SecondDotWidthScale") as Float;
         _dayHeightScale = getPropertyValue("DayHeightScale") as Float;
+        _dayHeightScaleLargeFont =
+            getPropertyValue("DayHeightScaleLargeFont") as Float;
         _batteryHeightScale = getPropertyValue("BatteryHeightScale") as Float;
         _bottomInfoHeightScale =
             getPropertyValue("BottomInfoHeightScale") as Float;
+        _bottomInfoHeightScaleLargeFont =
+            getPropertyValue("BottomInfoHeightScaleLargeFont") as Float;
         _dateHeightScale = getPropertyValue("DateHeightScale") as Float;
 
         _showDebugLines = getPropertyValue("ShowDebugLines") as Boolean;
@@ -145,8 +159,10 @@ class SeasideView extends WatchUi.WatchFace {
         // On tiny devices with a resolution < 240 there's not enought room to
         // use halft the screen (height / 2) so we scale by starting everything
         // a bit higher up.
+        // If the user uses large font it also looks a bit cramped so push
+        // everything up a bit for those users.
         var middleY = 0.0;
-        if (height < 240) {
+        if (height < 240 || _useLargeFont) {
             middleY = height / 2.5;
         } else {
             middleY = height / 2;
@@ -169,6 +185,14 @@ class SeasideView extends WatchUi.WatchFace {
         var accentColorHeight = height - accentColorStart;
         var halfAccentColor = accentColorHeight / 2;
         var midOfAccentColor = height - halfAccentColor;
+
+        var tinyOrSmallFont = _useLargeFont ? _smallFont : _tinyFont;
+        var dayHeightScale = _useLargeFont
+            ? _dayHeightScaleLargeFont
+            : _dayHeightScale;
+        var bottomInfoHeightScale = _useLargeFont
+            ? _bottomInfoHeightScaleLargeFont
+            : _bottomInfoHeightScale;
 
         if (!_dimensionsInitialized) {
             _hourDimensions = dc.getTextDimensions("0", _largeFont);
@@ -244,8 +268,8 @@ class SeasideView extends WatchUi.WatchFace {
         dc.setColor(_accentColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             middleX,
-            middleY + _tinyDimensions[1] / _dayHeightScale,
-            _tinyFont,
+            middleY + _tinyDimensions[1] / dayHeightScale,
+            tinyOrSmallFont,
             currentDay,
             Graphics.TEXT_JUSTIFY_CENTER
         );
@@ -257,7 +281,7 @@ class SeasideView extends WatchUi.WatchFace {
             dc.drawText(
                 middleX,
                 middleY + _tinyDimensions[1] / _batteryHeightScale,
-                _tinyFont,
+                tinyOrSmallFont,
                 batteryText,
                 Graphics.TEXT_JUSTIFY_CENTER
             );
@@ -275,8 +299,8 @@ class SeasideView extends WatchUi.WatchFace {
             dc.setColor(_accentColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 middleX,
-                accentColorStart - _tinyDimensions[1] / _bottomInfoHeightScale,
-                _tinyFont,
+                accentColorStart - _tinyDimensions[1] / bottomInfoHeightScale,
+                tinyOrSmallFont,
                 text,
                 Graphics.TEXT_JUSTIFY_CENTER
             );
