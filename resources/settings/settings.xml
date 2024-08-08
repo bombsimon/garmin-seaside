@@ -22,7 +22,7 @@
         <settingConfig type="boolean" />
     </setting>
 
-    <!-- -->
+    <!--
     <setting propertyKey="@Properties.AccentColorHex" title="Custom color">
         <settingConfig type="alphaNumeric" />
     </setting>
@@ -86,5 +86,5 @@
     <setting propertyKey="@Properties.DebugBottomInfoValue" title="Bottom info">
         <settingConfig type="alphaNumeric" />
     </setting>
-    <!-- -->
+    -->
 </settings>
