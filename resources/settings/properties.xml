@@ -1,6 +1,6 @@
 <properties>
-	<property id="BottomInfo" type="number">1</property>
-	<property id="AccentColor" type="number">0</property>
+	<property id="BottomInfo" type="number">0</property>
+	<property id="AccentColor" type="number">0xffcc00</property>
 	<property id="ShowBatteryThreshold" type="number">20</property>
 	<property id="UseLargeFont" type="boolean">false</property>
 
