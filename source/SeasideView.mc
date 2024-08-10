@@ -75,7 +75,7 @@ class SeasideView extends WatchUi.WatchFace {
     // Debug settings used to show guide lines and customize any value.
     // Enable debug settings and will load debug properties when settings
     // change.
-    private var _debugMode as Boolean = true;
+    private var _debugMode as Boolean = false;
     private var _showDebugLines as Boolean = false;
     private var _debugHourValue as String = "";
     private var _debugMinuteValue as String = "";
