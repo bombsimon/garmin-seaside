@@ -39,8 +39,8 @@ Pack steps icon into font small, manually tracing its boundaries.
 
 -   Show current time, date and name of day
 -   Multiple color selections
--   Toggle battery percentage
--   Show battery level in orange when less than or equal to 20%
+-   Configure when to show battery level (including always or never)
+-   Option to increase font size for better readability
 -   Option to show step count
 
 ## Links and References
