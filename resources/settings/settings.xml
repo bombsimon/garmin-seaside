@@ -3,6 +3,7 @@
         <settingConfig type="list">
             <listEntry value="0">@Strings.BottomInfoSettingNone</listEntry>
             <listEntry value="1">@Strings.BottomInfoSettingSteps</listEntry>
+            <listEntry value="2">@Strings.BottomInfoSettingWeather</listEntry>
         </settingConfig>
     </setting>
 
@@ -11,6 +12,13 @@
             <listEntry value="0xffcc00">@Strings.AccentColorSettingYellow</listEntry>
             <listEntry value="0xfe2550">@Strings.AccentColorSettingRed</listEntry>
             <listEntry value="0x25feca">@Strings.AccentColorSettingMint</listEntry>
+        </settingConfig>
+    </setting>
+
+    <setting propertyKey="@Properties.WeatherUnit" title="@Strings.WeatherUnitSettingTitle">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.WeatherUnitCelsius</listEntry>
+            <listEntry value="1">@Strings.WeatherUnitFarenheit</listEntry>
         </settingConfig>
     </setting>
 
@@ -64,6 +72,9 @@
         <settingConfig type="numeric" />
     </setting>
     <setting propertyKey="@Properties.DateHeightScale" title="Date height scale">
+        <settingConfig type="numeric" />
+    </setting>
+    <setting propertyKey="@Properties.WeatherIconScale" title="Weather info padding scale">
         <settingConfig type="numeric" />
     </setting>
 
