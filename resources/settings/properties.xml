@@ -2,6 +2,7 @@
 	<property id="BottomInfo" type="number">0</property>
 	<property id="AccentColor" type="number">0xffcc00</property>
 	<property id="ShowBatteryThreshold" type="number">20</property>
+	<property id="WeatherUnit" type="number">0</property>
 	<property id="UseLargeFont" type="boolean">false</property>
 
 	<property id="HourWidthScale" type="float">2.0</property>
@@ -18,6 +19,7 @@
 	<property id="BottomInfoHeightScale" type="float">2.8</property>
 	<property id="BottomInfoHeightScaleLargeFont" type="float">2.0</property>
 	<property id="DateHeightScale" type="float">1.5</property>
+	<property id="WeatherIconScale" type="float">0.6</property>
 
 	<property id="AccentColorHex" type="string"></property>
 	<property id="ShowDebugLines" type="boolean">false</property>

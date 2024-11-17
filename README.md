@@ -35,6 +35,11 @@ manually adding bounds for it.
 
 Pack steps icon into font small, manually tracing its boundaries.
 
+### Weather icons
+
+Weather icons are using the [Weather Icon
+Font](https://erikflowers.github.io/weather-icons/)
+
 ## Features
 
 -   Show current time, date and name of day

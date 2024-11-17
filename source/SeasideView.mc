@@ -1,11 +1,12 @@
+import Toybox.Application.Properties;
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.Math;
 import Toybox.System;
 import Toybox.Time.Gregorian;
 import Toybox.Time;
+import Toybox.Weather;
 import Toybox.WatchUi;
-import Toybox.Application.Properties;
 
 import Arms;
 
@@ -21,6 +22,10 @@ class SeasideView extends WatchUi.WatchFace {
         WatchUi.loadResource(Rez.Fonts.small) as WatchUi.FontResource;
     private var _tinyFont as WatchUi.FontResource =
         WatchUi.loadResource(Rez.Fonts.tiny) as WatchUi.FontResource;
+    private var _weatherFontTiny as WatchUi.FontResource =
+        WatchUi.loadResource(Rez.Fonts.weatherTiny) as WatchUi.FontResource;
+    private var _weatherFontSmall as WatchUi.FontResource =
+        WatchUi.loadResource(Rez.Fonts.weatherSmall) as WatchUi.FontResource;
 
     // Watchface customization settings
     private var _bottomInfo as Number =
@@ -29,6 +34,8 @@ class SeasideView extends WatchUi.WatchFace {
         getPropertyValue("AccentColor") as Number;
     private var _showBatteryThreshold as Number =
         getPropertyValue("ShowBatteryThreshold") as Number;
+    private var _weatherUnit as Number =
+        getPropertyValue("WeatherUnit") as Number;
 
     // Scaling settings. These are static and the same for all devices but setup
     // as properties to make debugging easier when trying out new fonts. Might
@@ -62,6 +69,8 @@ class SeasideView extends WatchUi.WatchFace {
         getPropertyValue("BottomInfoHeightScaleLargeFont") as Float;
     private var _dateHeightScale as Float =
         getPropertyValue("DateHeightScale") as Float;
+    private var _weatherIconScale as Float =
+        getPropertyValue("WeatherIconScale") as Float;
 
     // Font dimensions are stored as memeber varaibles to only have to load them
     // once. When loaded the first time, `_dimensionsInitialized` will be set to
@@ -96,6 +105,7 @@ class SeasideView extends WatchUi.WatchFace {
         _bottomInfo = getPropertyValue("BottomInfo") as Number;
         _showBatteryThreshold =
             getPropertyValue("ShowBatteryThreshold") as Number;
+        _weatherUnit = getPropertyValue("WeatherUnit") as Number;
         _accentColor = getPropertyValue("AccentColor") as Number;
         _useLargeFont = getPropertyValue("UseLargeFont") as Boolean;
 
@@ -134,6 +144,7 @@ class SeasideView extends WatchUi.WatchFace {
         _bottomInfoHeightScaleLargeFont =
             getPropertyValue("BottomInfoHeightScaleLargeFont") as Float;
         _dateHeightScale = getPropertyValue("DateHeightScale") as Float;
+        _weatherIconScale = getPropertyValue("WeatherIconScale") as Float;
 
         _showDebugLines = getPropertyValue("ShowDebugLines") as Boolean;
         _debugHourValue = getPropertyValue("DebugHourValue") as String;
@@ -190,9 +201,6 @@ class SeasideView extends WatchUi.WatchFace {
         var dayHeightScale = _useLargeFont
             ? _dayHeightScaleLargeFont
             : _dayHeightScale;
-        var bottomInfoHeightScale = _useLargeFont
-            ? _bottomInfoHeightScaleLargeFont
-            : _bottomInfoHeightScale;
 
         if (!_dimensionsInitialized) {
             _hourDimensions = dc.getTextDimensions("0", _largeFont);
@@ -287,24 +295,15 @@ class SeasideView extends WatchUi.WatchFace {
             );
         }
 
-        // Botton information (e.g. current steps)
-        if (_bottomInfo == 1) {
-            var activityInfo = ActivityMonitor.getInfo();
-            var text = Lang.format("#$1$", [activityInfo.steps]);
-
-            if (_debugMode && !_debugBottomInfoValue.equals("")) {
-                text = _debugBottomInfoValue;
-            }
-
-            dc.setColor(_accentColor, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(
-                middleX,
-                accentColorStart - _tinyDimensions[1] / bottomInfoHeightScale,
-                tinyOrSmallFont,
-                text,
-                Graphics.TEXT_JUSTIFY_CENTER
-            );
-        }
+        drawBottomInfo(
+            dc,
+            width,
+            height,
+            middleX,
+            middleY,
+            accentColorStart,
+            tinyOrSmallFont
+        );
 
         // Draw the current date.
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
@@ -325,6 +324,119 @@ class SeasideView extends WatchUi.WatchFace {
             dc.drawLine(0, height / 2, width, height / 2);
         }
 
+        drawSecondsIndicator(dc, width, height, clockTime);
+    }
+
+    function drawBottomInfo(
+        dc as Graphics.Dc,
+        width as Number,
+        height as Number,
+        middleX as Number,
+        middleY as Number or Float,
+        accentColorStart as Number,
+        tinyOrSmallFont as WatchUi.FontResource
+    ) as Void {
+        var bottomInfoHeightScale = _useLargeFont
+            ? _bottomInfoHeightScaleLargeFont
+            : _bottomInfoHeightScale;
+
+        // Botton information (e.g. current steps)
+        switch (_bottomInfo) {
+            case 1:
+                var activityInfo = ActivityMonitor.getInfo();
+                var text = Lang.format("#$1$", [activityInfo.steps]);
+
+                if (_debugMode && !_debugBottomInfoValue.equals("")) {
+                    text = _debugBottomInfoValue;
+                }
+
+                dc.setColor(_accentColor, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(
+                    middleX,
+                    accentColorStart -
+                        _tinyDimensions[1] / bottomInfoHeightScale,
+                    tinyOrSmallFont,
+                    text,
+                    Graphics.TEXT_JUSTIFY_CENTER
+                );
+                break;
+            case 2:
+                if (Weather has :getCurrentConditions) {
+                    var weather = Weather.getCurrentConditions();
+                    var weatherFont = _useLargeFont
+                        ? _weatherFontSmall
+                        : _weatherFontTiny;
+
+                    if (weather != null) {
+                        var icon = getWeatherIcon(weather.condition as Number);
+                        var iconWidth = dc.getTextDimensions(
+                            icon,
+                            weatherFont
+                        )[0];
+
+                        var temperature = "" as String;
+                        switch (_weatherUnit) {
+                            case 0:
+                                temperature = Lang.format("$1$°C", [
+                                    (weather.temperature as Number).format(
+                                        "%d"
+                                    ),
+                                ]);
+                                break;
+                            case 1:
+                                temperature = Lang.format("$1$°F", [
+                                    (
+                                        (9.0 / 5.0) *
+                                            (weather.temperature as Float) +
+                                        32.0
+                                    ).format("%d"),
+                                ]);
+                                break;
+                        }
+
+                        dc.setColor(_accentColor, Graphics.COLOR_TRANSPARENT);
+
+                        dc.drawText(
+                            middleX - iconWidth * _weatherIconScale,
+                            accentColorStart -
+                                _tinyDimensions[1] /
+                                    (bottomInfoHeightScale * 1.1),
+                            weatherFont,
+                            icon,
+                            Graphics.TEXT_JUSTIFY_CENTER
+                        );
+
+                        dc.drawText(
+                            middleX,
+                            accentColorStart -
+                                _tinyDimensions[1] / bottomInfoHeightScale,
+                            tinyOrSmallFont,
+                            temperature,
+                            Graphics.TEXT_JUSTIFY_LEFT
+                        );
+                    }
+                } else {
+                    dc.drawText(
+                        middleX,
+                        accentColorStart -
+                            _tinyDimensions[1] / bottomInfoHeightScale,
+                        tinyOrSmallFont,
+                        "NOT SUPPORTED",
+                        Graphics.TEXT_JUSTIFY_CENTER
+                    );
+                }
+
+            default:
+                break;
+        }
+    }
+
+    function drawSecondsIndicator(
+        dc as Graphics.Dc,
+        width as Number,
+        height as Number,
+        clockTime as System.ClockTime
+    ) as Void {
         // To draw a seconds indicator we need to figure out the outer circle of
         // the watch face for each second.
         //
@@ -397,6 +509,79 @@ class SeasideView extends WatchUi.WatchFace {
         // Draw a smaller circle inside the bigger one.
         dc.setColor(_accentColor, Graphics.COLOR_WHITE);
         dc.fillCircle(x, y, 3);
+    }
+
+    // Convert the weather condition to one of the available icons. This list is
+    // a best effort to resemble the one Garmin uses for their activities:
+    // https://support.garmin.com/en-MY/?faq=1N9a2SxuV90lkQ1s7g3yK8
+    function getWeatherIcon(condition as Number) as String {
+        switch (condition) {
+            case Weather.CONDITION_CLEAR:
+            case Weather.CONDITION_MOSTLY_CLEAR:
+            case Weather.CONDITION_PARTLY_CLEAR:
+            case Weather.CONDITION_FAIR:
+                return "a";
+            case Weather.CONDITION_CLOUDY:
+            case Weather.CONDITION_PARTLY_CLOUDY:
+            case Weather.CONDITION_MOSTLY_CLOUDY:
+            case Weather.CONDITION_THIN_CLOUDS:
+                return "d";
+            case Weather.CONDITION_FOG:
+            case Weather.CONDITION_MIST:
+            case Weather.CONDITION_SMOKE:
+            case Weather.CONDITION_HAZY:
+            case Weather.CONDITION_HAZE:
+            case Weather.CONDITION_DUST:
+            case Weather.CONDITION_SAND:
+            case Weather.CONDITION_VOLCANIC_ASH:
+                return "c";
+            case Weather.CONDITION_LIGHT_RAIN:
+            case Weather.CONDITION_DRIZZLE:
+            case Weather.CONDITION_SHOWERS:
+            case Weather.CONDITION_LIGHT_SHOWERS:
+            case Weather.CONDITION_CHANCE_OF_SHOWERS:
+            case Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN:
+            case Weather.CONDITION_SCATTERED_SHOWERS:
+                return "f";
+            case Weather.CONDITION_RAIN:
+            case Weather.CONDITION_HEAVY_RAIN:
+            case Weather.CONDITION_HEAVY_SHOWERS:
+                return "g";
+            case Weather.CONDITION_SNOW:
+            case Weather.CONDITION_LIGHT_SNOW:
+            case Weather.CONDITION_HEAVY_SNOW:
+            case Weather.CONDITION_HAIL:
+            case Weather.CONDITION_CHANCE_OF_SNOW:
+            case Weather.CONDITION_CLOUDY_CHANCE_OF_SNOW:
+            case Weather.CONDITION_FLURRIES:
+                return "i";
+            case Weather.CONDITION_RAIN_SNOW:
+            case Weather.CONDITION_LIGHT_RAIN_SNOW:
+            case Weather.CONDITION_HEAVY_RAIN_SNOW:
+            case Weather.CONDITION_FREEZING_RAIN:
+            case Weather.CONDITION_CHANCE_OF_RAIN_SNOW:
+            case Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN_SNOW:
+            case Weather.CONDITION_SLEET:
+                return "f";
+            case Weather.CONDITION_WINDY:
+            case Weather.CONDITION_TORNADO:
+            case Weather.CONDITION_HURRICANE:
+            case Weather.CONDITION_TROPICAL_STORM:
+            case Weather.CONDITION_SANDSTORM:
+            case Weather.CONDITION_SQUALL:
+                return "b";
+            case Weather.CONDITION_THUNDERSTORMS:
+            case Weather.CONDITION_CHANCE_OF_THUNDERSTORMS:
+            case Weather.CONDITION_SCATTERED_THUNDERSTORMS:
+                return "k";
+            case Weather.CONDITION_WINTRY_MIX:
+            case Weather.CONDITION_ICE:
+            case Weather.CONDITION_ICE_SNOW:
+                return "j";
+            case Weather.CONDITION_UNKNOWN:
+            default:
+                return "l";
+        }
     }
 
     function getDayOfWeek(dayOfWeek as Number) as String {

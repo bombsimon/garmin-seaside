@@ -1,16 +1,20 @@
 <strings>
     <string id="AppName">seaside</string>
-    <string id="AppVersionTitle">Version</string>
 
     <!-- Settings -->
     <string id="BottomInfoSettingTitle">Bottom info</string>
     <string id="BottomInfoSettingNone">None</string>
     <string id="BottomInfoSettingSteps">Steps</string>
+    <string id="BottomInfoSettingWeather">Weather</string>
 
     <string id="AccentColorSettingTitle">Accent color</string>
     <string id="AccentColorSettingYellow">Yellow</string>
     <string id="AccentColorSettingRed">Red</string>
     <string id="AccentColorSettingMint">Mint</string>
+
+    <string id="WeatherUnitSettingTitle">Temperature unit</string>
+    <string id="WeatherUnitCelsius">Celsius</string>
+    <string id="WeatherUnitFarenheit">Farenheit</string>
 
     <string id="ShowBatteryThresholdTitle">Show battery threshold (0 = never, 100 = always)</string>
 
