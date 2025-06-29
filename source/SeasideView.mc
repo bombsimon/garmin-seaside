@@ -11,6 +11,9 @@ import Toybox.WatchUi;
 import Arms;
 
 class SeasideView extends WatchUi.WatchFace {
+    // Power mode
+    private var _isInLowPowerMode as Boolean = false;
+
     // Watchface fonts
     private var _useLargeFont as Boolean =
         getPropertyValue("UseLargeFont") as Boolean;
@@ -228,13 +231,19 @@ class SeasideView extends WatchUi.WatchFace {
             }
         }
 
-        // Draw the entire background in the accent color.
-        dc.setColor(_accentColor, Graphics.COLOR_WHITE);
-        dc.fillRectangle(0, 0, width, height);
+        if (_isInLowPowerMode) {
+            dc.clear();
+            dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
+            dc.fillRectangle(0, 0, width, height);
+        } else {
+            // Draw the entire background in the accent color.
+            dc.setColor(_accentColor, Graphics.COLOR_WHITE);
+            dc.fillRectangle(0, 0, width, height);
 
-        // Draw the background black for 5/6 of the screen.
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
-        dc.fillRectangle(0, 0, width, height - height / 6);
+            // Draw the background black for 5/6 of the screen.
+            dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
+            dc.fillRectangle(0, 0, width, height - height / 6);
+        }
 
         // Draw the hour digits.
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
@@ -271,6 +280,32 @@ class SeasideView extends WatchUi.WatchFace {
             width / _dotSizeScale,
             width / _dotSizeScale
         );
+
+        if (_isInLowPowerMode) {
+            // Create a 4-minute cycle: 0-1 min (even), 2-3 min (odd), repeat
+            var cyclePosition = clockTime.min % 4;
+            var drawEvenLines = cyclePosition < 2; // true for minutes 0-1, false for minutes 2-3
+
+            for (var i = 0; i < height; i++) {
+                var shouldDrawLine = false;
+
+                if (drawEvenLines && i % 2 == 0) {
+                    // Draw on even pixel rows for first 2 minutes of cycle
+                    shouldDrawLine = true;
+                } else if (!drawEvenLines && i % 2 == 1) {
+                    // Draw on odd pixel rows for next 2 minutes of cycle
+                    shouldDrawLine = true;
+                }
+
+                if (shouldDrawLine) {
+                    dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
+                    dc.fillRectangle(0, i, width, 1);
+                }
+            }
+
+            // Don't draw anything else in low power mode
+            return;
+        }
 
         // Draw the current day.
         dc.setColor(_accentColor, Graphics.COLOR_TRANSPARENT);
@@ -642,8 +677,12 @@ class SeasideView extends WatchUi.WatchFace {
     function onHide() {}
 
     // The user has just looked at their watch. Timers and animations may be started here.
-    function onExitSleep() {}
+    function onExitSleep() {
+        _isInLowPowerMode = false;
+    }
 
     // Terminate any active timers and prepare for slow updates.
-    function onEnterSleep() {}
+    function onEnterSleep() {
+        _isInLowPowerMode = true;
+    }
 }
