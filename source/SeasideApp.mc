@@ -3,7 +3,7 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 
 (:properties_and_storaged)
-function getPropertyValue(key as PropertyKeyType) as PropertyValueType {
+function getPropertyValue(key as String) as Properties.ValueType {
     return Properties.getValue(key);
 }
 
